@@ -1,0 +1,200 @@
+/* Reset some default styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* Background image container styles */
+#background-image-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/background.jpg'); /* Replace with your image path */
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: -1; /* Place it behind other content */
+}
+
+#main-content {
+    position: relative;
+    z-index: 1;
+    max-height: calc(100vh - 20px); /* Adjust as needed */
+    overflow-y: auto;
+}
+
+/* Card container styles */
+#card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
+}
+
+/* Card styles */
+.card {
+    width: 150px; /* Adjust the size as needed */
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid #333; /* Outer edge border color */
+    background-color: #000; /* Vinyl center color */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow */
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* Circular container for text */
+.text-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #232323; /* Label color */
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px; /* Adjust padding as needed */
+    box-sizing: border-box;
+}
+
+/* Title and Artist text styles */
+.text-container h3 {
+    color: white; /* White text color */
+    font-size: 12px; /* Adjust font size as needed */
+    margin: 0;
+    padding: 5px; /* Adjust padding as needed */
+}
+
+.text-container p {
+    color: white; /* White text color */
+    font-size: 10px; /* Adjust font size as needed */
+    margin: 0;
+    padding: 5px; /* Adjust padding as needed */
+}
+
+/* Larger label hole */
+.label {
+    width: 20px;
+    height: 20px;
+    background-color: #333; /* Larger hole color */
+    border-radius: 50%;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+}
+
+/* Smaller hole inside the label-hole */
+.small-hole {
+    width: 2px;
+    height: 2px;
+    background-color: #000; /* Smaller hole color */
+    border-radius: 50%;
+    position: absolute;
+    bottom: 9px; /* Adjust the position to center it */
+    right: 9px; /* Adjust the position to center it */
+}
+
+/* Highlight gradients for a more realistic look */
+.card::before,
+.card::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 50%;
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.card::before {
+    top: 0;
+    left: 0;
+}
+
+.card::after {
+    bottom: 0;
+    right: 0;
+}
+
+/* Modal styles with a prominent shadow and glow */
+.modal {
+    position: fixed;
+    width: 500px; /* Fixed width of 500px */
+    height: 500px; /* Fixed height of 500px */
+    z-index: 999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background-color: #212020; /* Vinyl center color */
+    padding: 20px; /* Adjust padding as needed */
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5), 0px 0px 20px rgba(0, 255, 255, 0.5); /* Shadow with glow */
+    max-height: 80%;
+    overflow-y: auto;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+/* Font sizes for modal text */
+.modal h2 {
+    font-size: 24px; /* Larger font size for Title */
+    overflow-wrap: break-word; /* Allow text to wrap */
+    padding: 100px 0; /* Adjust padding as needed */
+}
+
+.modal p {
+    font-size: 12px; /* Default font size for other text */
+    overflow-wrap: break-word; /* Allow text to wrap */
+    padding: 5px 0; /* Adjust padding as needed */
+}
+
+/* Font size for Artist text in modal */
+.modal p.artist {
+    font-size: 24px; /* Larger font size for Artist */
+}
+
+
+
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.record-number-circle {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: #333; /* Circle background color */
+    color: rgba(0, 255, 255, 0.5);
+    border-radius: 50%;
+    width: 24px; /* Adjust the size as needed */
+    height: 24px; /* Adjust the size as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 10px; /* Adjust the font size as needed */
+}

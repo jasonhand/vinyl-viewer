@@ -1,0 +1,19 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "Catalog#": { "type": "string" },
+            "Artist": { "type": "string" },
+            "Title": { "type": "string" },
+            "Label": { "type": "string" },
+            "Format": { "type": "string" },
+            "Rating": { "type": ["string", "null"] },
+            "Released": { "type": "string" },
+            "release_id": { "type": "string" },
+            "CollectionFolder": { "type": "string" },
+            "Date Added": { "type": "string" }
+        },
+        "required": ["Catalog#", "Artist", "Title", "Label", "Format", "Released", "release_id", "CollectionFolder", "Date Added"]
+    }
+}
