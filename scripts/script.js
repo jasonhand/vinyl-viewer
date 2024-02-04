@@ -106,12 +106,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     const cardArtist = record.Artist.toLowerCase();
                     if (cardTitle.includes(userInput) || cardArtist.includes(userInput)) {
                         card.innerHTML = `
-                            <div class="record-number">${index + 1}</div>
                             <div class="text-container">
                                 <h3>${record.Title}</h3>
                                 <p>${record.Artist}</p>
                             </div>
-                            <p class="collection-folder">${record.CollectionFolder}</p>
                         `;
                         card.addEventListener("click", () => openModal(record));
                         cardContainer.appendChild(card);
