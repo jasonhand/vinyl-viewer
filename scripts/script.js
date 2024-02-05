@@ -10,6 +10,21 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize modal to be hidden
     modal.style.display = "none";
 
+    // Store the filtered data separately
+    let filteredData = [];
+
+// Event delegation for opening the modal
+cardContainer.addEventListener("click", (event) => {
+    const card = event.target.closest(".card");
+    if (card) {
+        const index = Array.from(cardContainer.children).indexOf(card);
+        //console.log("Index:", index); // Debugging line
+        //console.log("jsonData at Index:", jsonData[index]); // Debugging line
+        openModal(jsonData[index]);
+    }
+});
+
+
     // Function to generate and display randomized cards
     function generateAndDisplayRandomCards(data) {
         // Shuffle the data array randomly
@@ -82,41 +97,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function openModal(record) {
-        modal.style.display = "block";
+        if (record && typeof record === "object") {
+            modal.style.display = "block";
     
-        // Set the album art image source
-        const albumArt = document.getElementById("album-art");
-        albumArt.src = record["Spotify_Album_Art_URL"] || ""; // Use the "Spotify_Album_Art_URL" from the record object
+            // Set the album art image source
+            const albumArt = document.getElementById("album-art");
+            albumArt.src = record["Spotify_Album_Art_URL"] || ""; // Use the "Spotify_Album_Art_URL" from the record object
     
-        // Set the modal details
-        const modalTitle = document.querySelector("#modal-title");
-        modalTitle.innerText = record.Title || "Title";
+            // Set the modal details
+            const modalTitle = document.querySelector("#modal-title");
+            modalTitle.innerText = record.Title || "Title";
     
-        const modalArtist = document.querySelector("#modal-artist");
-        modalArtist.innerText = record.Artist || "Artist";
+            const modalArtist = document.querySelector("#modal-artist");
+            modalArtist.innerText = record.Artist || "Artist";
     
-        // Set the Spotify album link
-        const spotifyLink = document.querySelector("#modal-spotify-link");
-        spotifyLink.href = record["Spotify_Album_URL"] || "#"; // Use the "Spotify_Album_URL" from the record object
+            // Set the Spotify album link
+            const spotifyLink = document.querySelector("#modal-spotify-link");
+            spotifyLink.href = record["Spotify_Album_URL"] || "#"; // Use the "Spotify_Album_URL" from the record object
     
-        // Set the Discogs catalog link
-        const discogsLink = document.querySelector("#modal-discogs-link");
-        const catalogNumber = record["Catalog#"] || ""; // Use the "Catalog" from the record object
+            // Set the Discogs catalog link
+            const discogsLink = document.querySelector("#modal-discogs-link");
+            const catalogNumber = record["Catalog#"] || ""; // Use the "Catalog" from the record object
     
-        // Print catalogNumber to the console
-        console.log("Catalog ID:", catalogNumber);
+            // Print catalogNumber to the console
+            //console.log("Catalog ID:", catalogNumber);
     
-        // Set the specific collection as a variable
-        const userCollection = "jasonhand24"; // Replace with your actual collection name
+            // Set the specific collection as a variable
+            const userCollection = "jasonhand24"; // Replace with your actual collection name
     
-        // Create the Discogs base URL with the variable
-        const discogsBaseUrl = `https://www.discogs.com/user/${userCollection}/collection`;
-        const searchParam = encodeURIComponent(catalogNumber); // Encode the catalog number
-        discogsLink.href = `${discogsBaseUrl}?search=${searchParam}`; // Build the complete URL
+            // Create the Discogs base URL with the variable
+            const discogsBaseUrl = `https://www.discogs.com/user/${userCollection}/collection`;
+            const searchParam = encodeURIComponent(catalogNumber); // Encode the catalog number
+            discogsLink.href = `${discogsBaseUrl}?search=${searchParam}`; // Build the complete URL
+        } else {
+            console.error("Record is undefined or not an object:", record);
+        }
     }
     
-    
-    
+       
 
     // Event delegation for opening the modal
     cardContainer.addEventListener("click", (event) => {
@@ -142,11 +160,13 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = "none";
     }
 
-    // Fetch JSON data from the data directory
-    fetch("data/output.json") // Adjust the path as needed
-        .then((response) => response.json())
-        .then((jsonDataResponse) => {
-            jsonData = jsonDataResponse; // Store JSON data
+// Fetch JSON data from the data directory
+fetch("data/output.json") // Adjust the path as needed
+    .then((response) => response.json())
+    .then((jsonDataResponse) => {
+        jsonData = jsonDataResponse; // Store JSON data
+        //console.log("Fetched JSON Data:", jsonData); // Debugging line
+
 
             // Generate cards from the fetched JSON data
             generateCards(jsonData);
@@ -160,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 cardContainer.innerHTML = "";
 
                 // Filter and display cards based on user input
+                filteredData = [];
                 jsonData.forEach((record, index) => {
                     const card = document.createElement("div");
                     card.classList.add("card");
@@ -185,8 +206,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         // Store the original style of each card
                         originalCardStyles.push("block");
+
+                        // Store the filtered data
+                        filteredData.push(record);
                     }
                 });
+                
             });
 
             // Set a random background image on page load
