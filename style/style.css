@@ -42,7 +42,7 @@ body, html {
     border-radius: 50%;
     border: 0.1px solid #333; /* Outer edge border color */
     outline: 0.1px solid #333; /* Inner edge border color */
-    background: url('/images/vinyl_bg.png'); /* Update the path to your image */
+    background: url('/images/vinyl_bg.png'); /* Restore the background image */
     background-size: cover;
     background-repeat: no-repeat;
     position: relative;
@@ -53,6 +53,7 @@ body, html {
     transition: transform 0.3s ease-in-out;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow */
 }
+
 
 
 .card:hover {
@@ -161,13 +162,11 @@ body, html {
     justify-content: center;
 }
 
-
-
 /* Font sizes for modal text */
 .modal h2 {
-    font-size: 24px; /* Larger font size for Title */
+    font-size: 60px; /* Larger font size for Title */
     overflow-wrap: break-word; /* Allow text to wrap */
-    padding: 100px 0; /* Adjust padding as needed */
+   /* padding: 100px 0; /* Adjust padding as needed */
 }
 
 .modal p {
@@ -182,6 +181,10 @@ body, html {
 }
 
 
+/* Font size for Artist text in modal */
+.modal h2.artist {
+    font-size: 30px; /* Larger font size for Artist */
+}
 
 
 .close {
@@ -249,27 +252,40 @@ label {
     margin: 0 auto; /* Center the element horizontally */
 }
 
-/* Style for the card-sleeve container */
-.card-sleeve {
-    width: 200px; /* Adjust the width as needed */
-    height: 300px; /* Adjust the height as needed */
-    background-color: #f5f5f5; /* Paper sleeve color */
-    border: 1px solid #ddd; /* Paper sleeve border */
-    border-radius: 10px; /* Rounded corners for the paper sleeve */
-    padding: 10px; /* Padding inside the paper sleeve */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Shadow for the paper sleeve */
-  }
 
   /* Additional styling for the card content (Title and Artist) */
 .card h3 {
-    font-size: 18px;
+    font-size: 12px;
     margin: 0;
+    color: white;
   }
   
   .card p {
-    font-size: 14px;
+    font-size: 10px;
     margin: 0;
+    color: white;
   }
+
+/* Style for the album art container */
+#album-art-container {
+    text-align: center; /* Center its contents horizontally */
+}
+
+/* Style for the album art image */
+#album-art {
+    max-width: 250px; /* Ensure the image doesn't exceed the container width */
+    height: auto; /* Maintain the image's aspect ratio */
+    margin-bottom: 10px; /* Add spacing below the image */
+}
+
+/* Style for the title */
+#modal-title {
+    font-size: 1.5em; /* Adjust the font size as needed */
+    margin-bottom: 2px; /* Add spacing below the title */
+}
+
+/* Style for the artist */
+#modal-artist {
+    font-weight: bold; /* Make the artist text bold */
+}
+

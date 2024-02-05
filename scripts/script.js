@@ -14,13 +14,14 @@ document.addEventListener("DOMContentLoaded", function () {
     function generateAndDisplayRandomCards(data) {
         // Shuffle the data array randomly
         const shuffledData = shuffleArray(data);
-    
+
         // Clear the card container
         cardContainer.innerHTML = "";
-    
+
         // Generate and display cards based on randomized data
         generateCards(shuffledData);
     }
+
     // Function to shuffle an array randomly (Fisher-Yates shuffle algorithm)
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -29,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return array;
     }
-    
 
     // Store the original card styles in an array
     const originalCardStyles = [];
@@ -37,40 +37,40 @@ document.addEventListener("DOMContentLoaded", function () {
     // Store the JSON data
     let jsonData = [];
 
-// Function to generate cards based on the data
-function generateCards(data) {
-    data.forEach((record, index) => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.innerHTML = `
-            <div class="text-container">
-                <h3>${record.Title}</h3>
-                <p>${record.Artist}</p>
-                <p><strong>Label:</strong> ${record.Label || "N/A"}</p>
-                <p><strong>Format:</strong> ${record.Format || "N/A"}</p>
-                <p><strong>Rating:</strong> ${record.Rating || "N/A"}</p>
-                <p><strong>Released:</strong> ${record.Released || "N/A"}</p>
-                <p><strong>Collection Folder:</strong> ${record.CollectionFolder || "N/A"}</p>
-                <p><strong>Date Added:</strong> ${record["Date Added"] || "N/A"}</p>
-                <p><strong>Last Modified Time:</strong> ${record["Last modified time"] || "N/A"}</p>
-            </div>
-        `;
-        card.addEventListener("click", () => openModal(record));
-        cardContainer.appendChild(card);
-
-        // Increment the card counter
-        const cardCounter = index + 1;
-
-        // Create and add the counter number to the lower right circle
-        const recordNumber = document.createElement("div");
-        recordNumber.classList.add("record-number-circle");
-        recordNumber.innerText = cardCounter;
-        card.appendChild(recordNumber);
-
-        // Store the original style of each card
-        originalCardStyles.push("block");
-    });
-}
+    function generateCards(data) {
+        data.forEach((record, index) => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+    
+            // Create a <h3> element for the title
+            const titleElement = document.createElement("h3");
+            titleElement.innerText = record.Title || "Title";
+            card.appendChild(titleElement);
+    
+            // Create a <p> element for the artist
+            const artistElement = document.createElement("p");
+            artistElement.innerHTML = `<strong>${record.Artist || "Artist"}</strong>`;
+            card.appendChild(artistElement);
+    
+            card.addEventListener("click", () => openModal(record));
+            cardContainer.appendChild(card);
+    
+            // Increment the card counter
+            const cardCounter = index + 1;
+    
+            // Create and add the counter number to the lower right circle
+            const recordNumber = document.createElement("div");
+            recordNumber.classList.add("record-number-circle");
+            recordNumber.innerText = cardCounter;
+            card.appendChild(recordNumber);
+    
+            // Store the original style of each card
+            originalCardStyles.push("block");
+        });
+    }
+    
+    
+    
 
 
     // Function to set a random background image
@@ -82,18 +82,26 @@ function generateCards(data) {
         backgroundImageContainer.style.backgroundImage = `url('${imagePath}')`;
     }
 
-    // Function to open modal with record details
     function openModal(record) {
         modal.style.display = "block";
-        modalDetails.innerHTML = `
-            <h2>${record.Title}</h2>
-            <p><strong>${record.Artist}</strong></p>
-            <br>
-            <p><strong>Rating:</strong> ${record.Rating || "N/A"}</p>
-            <p><strong>Released:</strong> ${record.Released}</p>
-            <p class="collection-folder"><strong>Collection Folder:</strong> ${record.CollectionFolder}</p>
-        `;
+    
+        // Set the album art image source
+        const albumArt = document.getElementById("album-art");
+        albumArt.src = record["Spotify_Album_Art_URL"] || ""; // Use the "Spotify_Album_Art_URL" from the record object
+    
+        // Set the modal details
+        const modalTitle = document.querySelector("#modal-title");
+        modalTitle.innerText = record.Title || "Title";
+    
+        const modalArtist = document.querySelector("#modal-artist");
+        modalArtist.innerText = record.Artist || "Artist";
+    
+        // Set the Spotify album link
+        const spotifyLink = document.querySelector("#modal-spotify-link");
+        spotifyLink.href = record["Spotify_Album_URL"] || "#"; // Use the "Spotify_Album_URL" from the record object
     }
+    
+    
 
     // Close modal when clicking the close button
     closeBtn.addEventListener("click", () => closeModal());
