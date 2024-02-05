@@ -13,18 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Store the filtered data separately
     let filteredData = [];
 
-// Event delegation for opening the modal
-cardContainer.addEventListener("click", (event) => {
-    const card = event.target.closest(".card");
-    if (card) {
-        const index = Array.from(cardContainer.children).indexOf(card);
-        //console.log("Index:", index); // Debugging line
-        //console.log("jsonData at Index:", jsonData[index]); // Debugging line
-        openModal(jsonData[index]);
-    }
-});
-
-
     // Function to generate and display randomized cards
     function generateAndDisplayRandomCards(data) {
         // Shuffle the data array randomly
@@ -128,8 +116,6 @@ cardContainer.addEventListener("click", (event) => {
 
             const modalLow = document.querySelector("#modal-low");
             modalLow.innerText = record["Low"] || "N/A";            
-            // Print catalogNumber to the console
-            //console.log("Catalog ID:", catalogNumber);
     
             // Set the specific collection as a variable
             const userCollection = "jasonhand24"; // Replace with your actual collection name
@@ -143,8 +129,6 @@ cardContainer.addEventListener("click", (event) => {
         }
     }
     
-       
-
     // Event delegation for opening the modal
     cardContainer.addEventListener("click", (event) => {
         const card = event.target.closest(".card");
@@ -169,15 +153,17 @@ cardContainer.addEventListener("click", (event) => {
         modal.style.display = "none";
     }
 
-// Fetch JSON data from the data directory
-fetch("data/output.json") // Adjust the path as needed
-    .then((response) => response.json())
-    .then((jsonDataResponse) => {
-        jsonData = jsonDataResponse; // Store JSON data
-        //console.log("Fetched JSON Data:", jsonData); // Debugging line
+    // Fetch JSON data from the data directory, shuffle, and display cards
+    fetch("data/output.json") // Adjust the path as needed
+        .then((response) => response.json())
+        .then((jsonDataResponse) => {
+            // Store JSON data
+            jsonData = jsonDataResponse;
 
+            // Shuffle the JSON data randomly
+            jsonData = shuffleArray(jsonData);
 
-            // Generate cards from the fetched JSON data
+            // Generate and display cards from the shuffled JSON data
             generateCards(jsonData);
 
             // Add event listener for the "keyup" event on the search input
@@ -220,7 +206,6 @@ fetch("data/output.json") // Adjust the path as needed
                         filteredData.push(record);
                     }
                 });
-                
             });
 
             // Set a random background image on page load
