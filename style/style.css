@@ -162,6 +162,13 @@ body, html {
     justify-content: center;
 }
 
+/* CSS */
+.modal-content {
+    max-height: 80vh; /* Set the maximum height to 80% of the viewport height */
+    overflow-y: auto; /* Enable vertical scrolling when content exceeds max-height */
+}
+
+
 /* Font sizes for modal text */
 .modal h2 {
     font-size: 60px; /* Larger font size for Title */
@@ -314,3 +321,23 @@ label {
     font-weight: bold; /* Make the artist text bold */
 }
 
+/* Style the "high," "median," and "low" fields in the modal */
+#modal-high,
+#modal-median,
+#modal-low {
+    font-weight: bold; /* Make the text bold */
+    margin-top: 5px; /* Add some spacing between each field */
+}
+
+/* Style the values themselves */
+#modal-high,
+#modal-median,
+#modal-low {
+    color: #ffffff; /* Change the text color to blue (you can use your preferred color) */
+    font-size: 10px;
+}
+
+/* Style the entire modal text section (including "high," "median," and "low") */
+.modal-text {
+    margin-top: 15px; /* Add some spacing between the text and other elements */
+}

@@ -102,7 +102,7 @@ cardContainer.addEventListener("click", (event) => {
     
             // Set the album art image source
             const albumArt = document.getElementById("album-art");
-            albumArt.src = record["Spotify_Album_Art_URL"] || ""; // Use the "Spotify_Album_Art_URL" from the record object
+            albumArt.src = record["Spotify Album Art URL"] || ""; // Use the "Spotify_Album_Art_URL" from the record object
     
             // Set the modal details
             const modalTitle = document.querySelector("#modal-title");
@@ -119,6 +119,15 @@ cardContainer.addEventListener("click", (event) => {
             const discogsLink = document.querySelector("#modal-discogs-link");
             const catalogNumber = record["Catalog#"] || ""; // Use the "Catalog" from the record object
     
+            // Set the "high," "median," and "low" values
+            const modalHigh = document.querySelector("#modal-high");
+            modalHigh.innerText = record["High"] || "N/A";
+
+            const modalMedian = document.querySelector("#modal-median");
+            modalMedian.innerText = record["Median"] || "N/A";
+
+            const modalLow = document.querySelector("#modal-low");
+            modalLow.innerText = record["Low"] || "N/A";            
             // Print catalogNumber to the console
             //console.log("Catalog ID:", catalogNumber);
     
