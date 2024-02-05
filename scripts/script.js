@@ -83,22 +83,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function openModal(record) {
         modal.style.display = "block";
-
+    
         // Set the album art image source
         const albumArt = document.getElementById("album-art");
         albumArt.src = record["Spotify_Album_Art_URL"] || ""; // Use the "Spotify_Album_Art_URL" from the record object
-
+    
         // Set the modal details
         const modalTitle = document.querySelector("#modal-title");
         modalTitle.innerText = record.Title || "Title";
-
+    
         const modalArtist = document.querySelector("#modal-artist");
         modalArtist.innerText = record.Artist || "Artist";
-
+    
         // Set the Spotify album link
         const spotifyLink = document.querySelector("#modal-spotify-link");
         spotifyLink.href = record["Spotify_Album_URL"] || "#"; // Use the "Spotify_Album_URL" from the record object
+    
+        // Set the Discogs catalog link
+        const discogsLink = document.querySelector("#modal-discogs-link");
+        const catalogNumber = record["Catalog#"] || ""; // Use the "Catalog" from the record object
+    
+        // Print catalogNumber to the console
+        console.log("Catalog ID:", catalogNumber);
+    
+        // Set the specific collection as a variable
+        const userCollection = "jasonhand24"; // Replace with your actual collection name
+    
+        // Create the Discogs base URL with the variable
+        const discogsBaseUrl = `https://www.discogs.com/user/${userCollection}/collection`;
+        const searchParam = encodeURIComponent(catalogNumber); // Encode the catalog number
+        discogsLink.href = `${discogsBaseUrl}?search=${searchParam}`; // Build the complete URL
     }
+    
+    
+    
 
     // Event delegation for opening the modal
     cardContainer.addEventListener("click", (event) => {
