@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
             // Set the Spotify album link
             const spotifyLink = document.querySelector("#modal-spotify-link");
-            spotifyLink.href = record["Spotify_Album_URL"] || "#"; // Use the "Spotify_Album_URL" from the record object
+            spotifyLink.href = record["Spotify Album URL"] || "#"; // Use the "Spotify_Album_URL" from the record object
     
             // Set the Discogs catalog link
             const discogsLink = document.querySelector("#modal-discogs-link");
