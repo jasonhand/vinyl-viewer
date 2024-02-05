@@ -37,33 +37,41 @@ document.addEventListener("DOMContentLoaded", function () {
     // Store the JSON data
     let jsonData = [];
 
-    // Function to generate cards based on the data
-    function generateCards(data) {
-        data.forEach((record, index) => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-            card.innerHTML = `
-                <div class="text-container">
-                    <h3>${record.Title}</h3>
-                    <p>${record.Artist}</p>
-                </div>
-            `;
-            card.addEventListener("click", () => openModal(record));
-            cardContainer.appendChild(card);
+// Function to generate cards based on the data
+function generateCards(data) {
+    data.forEach((record, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.innerHTML = `
+            <div class="text-container">
+                <h3>${record.Title}</h3>
+                <p>${record.Artist}</p>
+                <p><strong>Label:</strong> ${record.Label || "N/A"}</p>
+                <p><strong>Format:</strong> ${record.Format || "N/A"}</p>
+                <p><strong>Rating:</strong> ${record.Rating || "N/A"}</p>
+                <p><strong>Released:</strong> ${record.Released || "N/A"}</p>
+                <p><strong>Collection Folder:</strong> ${record.CollectionFolder || "N/A"}</p>
+                <p><strong>Date Added:</strong> ${record["Date Added"] || "N/A"}</p>
+                <p><strong>Last Modified Time:</strong> ${record["Last modified time"] || "N/A"}</p>
+            </div>
+        `;
+        card.addEventListener("click", () => openModal(record));
+        cardContainer.appendChild(card);
 
-            // Increment the card counter
-            const cardCounter = index + 1;
+        // Increment the card counter
+        const cardCounter = index + 1;
 
-            // Create and add the counter number to the lower right circle
-            const recordNumber = document.createElement("div");
-            recordNumber.classList.add("record-number-circle");
-            recordNumber.innerText = cardCounter;
-            card.appendChild(recordNumber);
+        // Create and add the counter number to the lower right circle
+        const recordNumber = document.createElement("div");
+        recordNumber.classList.add("record-number-circle");
+        recordNumber.innerText = cardCounter;
+        card.appendChild(recordNumber);
 
-            // Store the original style of each card
-            originalCardStyles.push("block");
-        });
-    }
+        // Store the original style of each card
+        originalCardStyles.push("block");
+    });
+}
+
 
     // Function to set a random background image
     function setRandomBackgroundImage() {
