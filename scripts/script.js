@@ -10,6 +10,27 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize modal to be hidden
     modal.style.display = "none";
 
+    // Function to generate and display randomized cards
+    function generateAndDisplayRandomCards(data) {
+        // Shuffle the data array randomly
+        const shuffledData = shuffleArray(data);
+    
+        // Clear the card container
+        cardContainer.innerHTML = "";
+    
+        // Generate and display cards based on randomized data
+        generateCards(shuffledData);
+    }
+    // Function to shuffle an array randomly (Fisher-Yates shuffle algorithm)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+    
+
     // Store the original card styles in an array
     const originalCardStyles = [];
 

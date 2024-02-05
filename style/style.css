@@ -248,3 +248,28 @@ label {
     display: block;
     margin: 0 auto; /* Center the element horizontally */
 }
+
+/* Style for the card-sleeve container */
+.card-sleeve {
+    width: 200px; /* Adjust the width as needed */
+    height: 300px; /* Adjust the height as needed */
+    background-color: #f5f5f5; /* Paper sleeve color */
+    border: 1px solid #ddd; /* Paper sleeve border */
+    border-radius: 10px; /* Rounded corners for the paper sleeve */
+    padding: 10px; /* Padding inside the paper sleeve */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Shadow for the paper sleeve */
+  }
+
+  /* Additional styling for the card content (Title and Artist) */
+.card h3 {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .card p {
+    font-size: 14px;
+    margin: 0;
+  }
