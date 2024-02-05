@@ -37,37 +37,35 @@ document.addEventListener("DOMContentLoaded", function () {
     // Store the JSON data
     let jsonData = [];
 
-    function generateCards(data) {
-        data.forEach((record, index) => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-    
-            // Create a <h3> element for the title
-            const titleElement = document.createElement("h3");
-            titleElement.innerText = record.Title || "Title";
-            card.appendChild(titleElement);
-    
-            // Create a <p> element for the artist
-            const artistElement = document.createElement("p");
-            artistElement.innerHTML = `<strong>${record.Artist || "Artist"}</strong>`;
-            card.appendChild(artistElement);
-    
-            card.addEventListener("click", () => openModal(record));
-            cardContainer.appendChild(card);
-    
-            // Increment the card counter
-            const cardCounter = index + 1;
-    
-            // Create and add the counter number to the lower right circle
-            const recordNumber = document.createElement("div");
-            recordNumber.classList.add("record-number-circle");
-            recordNumber.innerText = cardCounter;
-            card.appendChild(recordNumber);
-    
-            // Store the original style of each card
-            originalCardStyles.push("block");
-        });
-    }
+// Function to generate cards based on the data
+function generateCards(data) {
+    data.forEach((record, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.innerHTML = `
+            <div class="album-art-container">
+                <img class="album-art" src="${record.Spotify_Album_URL}" alt="Album Art">
+            </div>
+            <div class="text-container">
+                <h3>${record.Title}</h3>
+                <p>${record.Artist}</p>
+            </div>
+        `;
+        cardContainer.appendChild(card);
+
+        // Increment the card counter
+        const cardCounter = index + 1;
+
+        // Create and add the counter number to the lower right circle
+        const recordNumber = document.createElement("div");
+        recordNumber.classList.add("record-number-circle");
+        recordNumber.innerText = cardCounter;
+        card.appendChild(recordNumber);
+
+        // Store the original style of each card
+        originalCardStyles.push("block");
+    });
+}
     
     
     
