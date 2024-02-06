@@ -82,7 +82,7 @@ body, html {
 /* Title and Artist text styles */
 .text-container h3 {
     color: white; /* White text color */
-    font-size: 12px; /* Adjust font size as needed */
+    font-size: 10px; /* Adjust font size as needed */
     margin: 0;
     padding: 5px; /* Adjust padding as needed */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
@@ -90,7 +90,7 @@ body, html {
 
 .text-container p {
     color: white; /* White text color */
-    font-size: 10px; /* Adjust font size as needed */
+    font-size: 8px; /* Adjust font size as needed */
     margin: 0;
     padding: 5px; /* Adjust padding as needed */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -141,6 +141,19 @@ body, html {
     right: 0;
 }
 
+.modal-wrapper {
+    /* Ensure the wrapper takes the full viewport height */
+    height: 100vh;
+    /* Enable scrolling within the wrapper if needed */
+    overflow-y: auto;
+    /* Hide horizontal scrollbar (optional) */
+    overflow-x: hidden;
+    /* Center the modal content vertically and horizontally */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Modal styles with a prominent shadow and glow */
 .modal {
     position: fixed;
@@ -164,6 +177,11 @@ body, html {
     justify-content: center;
 }
 
+/* Prevent body scrolling when the modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+
 /* CSS */
 .modal-content {
     max-height: 80vh; /* Set the maximum height to 80% of the viewport height */
@@ -173,7 +191,7 @@ body, html {
 
 /* Font sizes for modal text */
 .modal h2 {
-    font-size: 60px; /* Larger font size for Title */
+    font-size: 40px; /* Larger font size for Title */
     overflow-wrap: break-word; /* Allow text to wrap */
    /* padding: 100px 0; /* Adjust padding as needed */
 }
@@ -285,6 +303,7 @@ label {
     max-width: 190px; /* Ensure the image doesn't exceed the container width */
     height: auto; /* Maintain the image's aspect ratio */
     margin-bottom: 10px; /* Add spacing below the image */
+    margin-top: 10px; /* Add spacing above the image */
     box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5), 0px 0px 20px rgba(0, 255, 255, 0.5); /* Shadow with glow */
 }
 
@@ -302,7 +321,7 @@ label {
 
 /* Style for the title text */
 #modal-title {
-    font-size: 1.5em; /* Adjust the font size as needed */
+    font-size: 20px; /* Adjust the font size as needed */
     margin-bottom: 2px; /* Add spacing below the title */
     position: relative; /* Ensure it's positioned relative to the container */
     z-index: 1; /* Place it above the background */
@@ -310,7 +329,7 @@ label {
 
 /* Style for the artist text */
 .modal h2 {
-    font-size: 60px; /* Larger font size for Title */
+    font-size: 20px; /* Larger font size for Title */
     overflow-wrap: break-word; /* Allow text to wrap */
     margin: 0;
     position: relative; /* Ensure it's positioned relative to the container */
@@ -342,4 +361,13 @@ label {
 /* Style the entire modal text section (including "high," "median," and "low") */
 .modal-text {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+}
+
+#spotify-player-container {
+    height: 90px; /* Adjust the height as needed */
+    overflow: hidden; /* Hide any overflowing content (if necessary) */
+}
+
+iframe {
+    border: none; /* Remove the border */
 }

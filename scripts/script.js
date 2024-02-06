@@ -95,11 +95,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // Set the modal details
             const modalTitle = document.querySelector("#modal-title");
             modalTitle.innerText = record.Title || "Title";
-            modalTitle.classList.add("modal-text"); // Apply the drop shadow class
     
             const modalArtist = document.querySelector("#modal-artist");
             modalArtist.innerText = record.Artist || "Artist";
-            modalTitle.classList.add("modal-text"); // Apply the drop shadow class
     
             // Set the Spotify album link
             const spotifyLink = document.querySelector("#modal-spotify-link");
@@ -112,12 +110,15 @@ document.addEventListener("DOMContentLoaded", function () {
             // Set the "high," "median," and "low" values
             const modalHigh = document.querySelector("#modal-high");
             modalHigh.innerText = record["High"] || "N/A";
-
+    
             const modalMedian = document.querySelector("#modal-median");
             modalMedian.innerText = record["Median"] || "N/A";
-
+    
             const modalLow = document.querySelector("#modal-low");
-            modalLow.innerText = record["Low"] || "N/A";            
+            modalLow.innerText = record["Low"] || "N/A";
+    
+            // Print catalogNumber to the console
+            //console.log("Catalog ID:", catalogNumber);
     
             // Set the specific collection as a variable
             const userCollection = "jasonhand24"; // Replace with your actual collection name
@@ -126,10 +127,37 @@ document.addEventListener("DOMContentLoaded", function () {
             const discogsBaseUrl = `https://www.discogs.com/user/${userCollection}/collection`;
             const searchParam = encodeURIComponent(catalogNumber); // Encode the catalog number
             discogsLink.href = `${discogsBaseUrl}?search=${searchParam}`; // Build the complete URL
+    
+            // Set the Spotify embedded player
+            const spotifyPlayerContainer = document.getElementById("spotify-player-container");
+            if (spotifyPlayerContainer) {
+                spotifyPlayerContainer.innerHTML = ""; // Clear any previous content
+    
+                if (record["Spotify Album URL"]) {
+                    // Create an iframe for the Spotify player
+                    const spotifyPlayer = document.createElement("iframe");
+                    spotifyPlayer.src = `https://open.spotify.com/embed/album/${getAlbumId(record["Spotify Album URL"])}`;
+                    spotifyPlayer.frameborder = "0";
+                    spotifyPlayer.allowtransparency = "true";
+                    spotifyPlayer.allow = "encrypted-media";
+                    spotifyPlayerContainer.appendChild(spotifyPlayer);
+                }
+            }
         } else {
             console.error("Record is undefined or not an object:", record);
         }
     }
+    
+    
+    
+    // Helper function to extract the album ID from Spotify URL
+    function getAlbumId(spotifyUrl) {
+        const match = spotifyUrl.match(/album\/(\w+)/);
+        return match ? match[1] : "";
+    }
+    
+    
+    
     
     // Event delegation for opening the modal
     cardContainer.addEventListener("click", (event) => {
