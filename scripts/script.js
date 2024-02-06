@@ -95,9 +95,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Set the modal details
             const modalTitle = document.querySelector("#modal-title");
             modalTitle.innerText = record.Title || "Title";
+            modalTitle.classList.add("modal-text"); // Apply the drop shadow class
     
             const modalArtist = document.querySelector("#modal-artist");
             modalArtist.innerText = record.Artist || "Artist";
+            modalTitle.classList.add("modal-text"); // Apply the drop shadow class
     
             // Set the Spotify album link
             const spotifyLink = document.querySelector("#modal-spotify-link");
@@ -141,17 +143,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Close modal when clicking the close button
     closeBtn.addEventListener("click", () => closeModal());
 
-    // Close modal when clicking outside the modal content
-    window.addEventListener("click", (event) => {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
-
     // Function to close modal
     function closeModal() {
         modal.style.display = "none";
     }
+
+    // Close modal when clicking anywhere outside the modal content
+    document.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
 
     // Fetch JSON data from the data directory, shuffle, and display cards
     fetch("data/output.json") // Adjust the path as needed

@@ -85,6 +85,7 @@ body, html {
     font-size: 12px; /* Adjust font size as needed */
     margin: 0;
     padding: 5px; /* Adjust padding as needed */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 .text-container p {
@@ -92,6 +93,7 @@ body, html {
     font-size: 10px; /* Adjust font size as needed */
     margin: 0;
     padding: 5px; /* Adjust padding as needed */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Larger label hole */
@@ -339,5 +341,5 @@ label {
 
 /* Style the entire modal text section (including "high," "median," and "low") */
 .modal-text {
-    margin-top: 15px; /* Add some spacing between the text and other elements */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
 }
