@@ -109,13 +109,13 @@ document.addEventListener("DOMContentLoaded", function () {
     
             // Set the "high," "median," and "low" values
             const modalHigh = document.querySelector("#modal-high");
-            modalHigh.innerText = record["High"] || "N/A";
+            modalHigh.innerText = record["High"] || "High price coming soon";
     
             const modalMedian = document.querySelector("#modal-median");
-            modalMedian.innerText = record["Median"] || "N/A";
+            modalMedian.innerText = record["Median"] || "Median price coming soon";
     
             const modalLow = document.querySelector("#modal-low");
-            modalLow.innerText = record["Low"] || "N/A";
+            modalLow.innerText = record["Low"] || "Low price coming soon";
     
             // Print catalogNumber to the console
             //console.log("Catalog ID:", catalogNumber);
