@@ -164,7 +164,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const card = event.target.closest(".card");
         if (card) {
             const index = Array.from(cardContainer.children).indexOf(card);
-            openModal(jsonData[index]);
+            // Use filteredData when we have search results, otherwise use jsonData
+            const dataToUse = filteredData.length > 0 ? filteredData : jsonData;
+            openModal(dataToUse[index]);
         }
     });
 
