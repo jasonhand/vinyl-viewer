@@ -164,8 +164,17 @@ document.addEventListener("DOMContentLoaded", function () {
         const card = event.target.closest(".card");
         if (card) {
             const index = Array.from(cardContainer.children).indexOf(card);
+            // Debug logs
+            console.log("Card clicked index:", index);
+            console.log("Filtered data length:", filteredData.length);
+            console.log("Using filtered data:", filteredData.length > 0);
+            
             // Use filteredData when we have search results, otherwise use jsonData
             const dataToUse = filteredData.length > 0 ? filteredData : jsonData;
+            
+            // Log the record we're about to display
+            console.log("Record being displayed:", dataToUse[index]);
+            
             openModal(dataToUse[index]);
         }
     });
