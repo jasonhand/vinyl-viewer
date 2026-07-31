@@ -123,4 +123,20 @@ The removed `data/input.csv` file remains in existing Git history. If it contain
 
 ## Monitoring
 
-Get free monitoring for this project with [Datadog](https://www.datadoghq.com/dg/monitor/free-trial-b/?utm_source=jhand_demo).
+The production app uses [Datadog Browser RUM](https://docs.datadoghq.com/real_user_monitoring/application_monitoring/browser/setup/) to collect page performance, browser errors, resources, long tasks, and selected product events.
+
+- `scripts/rum.js` loads the Datadog Browser SDK and identifies Netlify, GitHub Pages, and local traffic with a `deployment` context value.
+- Session Replay is disabled. Automatic action names are privacy-protected and the default privacy level is `mask`.
+- Query strings, URL fragments, and Discogs usernames in resource paths are removed before events are sent.
+- Custom events contain aggregate counts and feature state only; usernames, searches, share descriptions, album IDs, and share URLs are not included.
+- The browser client token is intentionally public. Never add a Datadog API key or application key to this repository.
+
+Netlify's `_headers` file permits the Datadog Browser SDK and intake endpoints in the Content Security Policy. GitHub Pages does not apply `_headers`; configure equivalent headers at a proxy or CDN if one is added in front of that deployment.
+
+To validate locally, serve the repository and open the app in a browser:
+
+```bash
+python3 -m http.server 8001
+```
+
+In browser developer tools, confirm that `datadog-rum.js` loads and requests to `browser-intake-datadoghq.com` are not blocked. New applications can take a few minutes to appear in the [Datadog RUM Explorer](https://app.datadoghq.com/rum/performance-monitoring?query=%40application.id%3A709e7d93-9fec-4547-9721-154d38c929ae).

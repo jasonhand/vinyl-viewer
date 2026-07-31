@@ -97,6 +97,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastDiscogsRequestTime = 0;
     let discogsRequestQueue = Promise.resolve();
 
+    function trackRum(name, context = {}) {
+        window.vinylRum?.track(name, context);
+    }
+
+    function reportRumError(message, error, context = {}) {
+        window.vinylRum?.report(new Error(message), {
+            ...context,
+            status_code: Number.isFinite(error?.status) ? error.status : undefined,
+        });
+    }
+
     function shuffle(records) {
         const shuffled = [...records];
         for (let index = shuffled.length - 1; index > 0; index -= 1) {
@@ -311,8 +322,14 @@ document.addEventListener("DOMContentLoaded", () => {
             state.sellerInventoryPage = response.pagination?.page || page;
             state.sellerInventoryPages = response.pagination?.pages || 0;
             state.sellerInventoryTotal = response.pagination?.items || 0;
+            trackRum("seller_inventory_loaded", {
+                page: state.sellerInventoryPage,
+                page_count: state.sellerInventoryPages,
+                result_count: state.sellerRecords.length,
+            });
         } catch (error) {
             console.error("Unable to load seller inventory:", error);
+            reportRumError("Discogs seller inventory request failed", error, { operation: "seller_inventory" });
             state.sellerError = error.status === 404
                 ? `@${state.profile.username} does not have a public seller inventory.`
                 : "This seller inventory could not be loaded from Discogs. Try again shortly.";
@@ -1331,6 +1348,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function openModal(record) {
         const requestId = ++state.modalRequestId;
+        trackRum("album_modal_opened", { collection_type: record.source || state.activeView });
         if (elements.modal.hidden) state.lastFocusedElement = document.activeElement;
         elements.modalContent.replaceChildren(buildModalContent(record, null, true));
         elements.modal.hidden = false;
@@ -1357,6 +1375,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.error("Unable to load release details:", error);
+            reportRumError("Discogs release details request failed", error, { operation: "release_details" });
             if (requestId !== state.modalRequestId || elements.modal.hidden) return;
             elements.modalContent.replaceChildren(
                 buildModalContent(record, null, false, "Release details could not be loaded from Discogs."),
@@ -1478,8 +1497,14 @@ document.addEventListener("DOMContentLoaded", () => {
             shuffle(state.records);
             localStorage.setItem("vinyl-viewer-username", state.profile.username);
             showConnected();
+            trackRum("discogs_collection_loaded", {
+                collection_count: state.records.length,
+                wantlist_count: state.wantlistRecords.length,
+                shared_view: state.isSharedView,
+            });
         } catch (error) {
             console.error("Unable to connect to Discogs:", error);
+            reportRumError("Discogs collection request failed", error, { operation: "collection" });
             const message = error.status === 404
                 ? `Discogs user “${trimmedUsername}” was not found.`
                 : error.status === 403
@@ -1515,6 +1540,7 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.analyticsDashboard.replaceChildren();
         elements.usernameInput.value = "";
         showConnectionScreen();
+        trackRum("discogs_user_disconnected");
     }
 
     elements.searchInput.addEventListener("input", renderRecords);
@@ -1527,6 +1553,7 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.viewButtons.forEach((button) => {
         button.addEventListener("click", () => {
             state.activeView = button.dataset.view;
+            trackRum("app_view_changed", { view: state.activeView });
             updateNavigation();
             renderRecords();
             if (state.activeView === "seller" && state.sellerInventoryPage === 0) {
@@ -1543,8 +1570,14 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.searchInput.value = "";
         loadSellerInventoryPage(Math.min(state.sellerInventoryPages, state.sellerInventoryPage + 1));
     });
-    elements.shareCurrentButton.addEventListener("click", () => showShareResult(createShareUrl("current")));
-    elements.shareFullButton.addEventListener("click", () => showShareResult(createShareUrl("full")));
+    elements.shareCurrentButton.addEventListener("click", () => {
+        trackRum("share_link_created", { mode: "filtered" });
+        showShareResult(createShareUrl("current"));
+    });
+    elements.shareFullButton.addEventListener("click", () => {
+        trackRum("share_link_created", { mode: "full" });
+        showShareResult(createShareUrl("full"));
+    });
     elements.shareCustomButton.addEventListener("click", () => {
         elements.customSharePanel.hidden = false;
         renderCustomShareGrid();
@@ -1560,6 +1593,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderCustomShareGrid();
     });
     elements.createCustomShare.addEventListener("click", () => {
+        trackRum("share_link_created", { mode: "custom", album_count: state.customShareIds.size });
         showShareResult(createShareUrl("custom", [...state.customShareIds]));
     });
     elements.copyShareUrl.addEventListener("click", () => {
