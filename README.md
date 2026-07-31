@@ -129,6 +129,7 @@ The production app uses [Datadog Browser RUM](https://docs.datadoghq.com/real_us
 - Session Replay is enabled for 100% of monitored sessions. Automatic action names are privacy-protected and the default privacy level is `mask`.
 - Query strings, URL fragments, and Discogs usernames in resource paths are removed before events are sent.
 - Custom events contain aggregate counts and feature state only; usernames, searches, share descriptions, album IDs, and share URLs are not included.
+- Support button clicks emit `developer_support_clicked` with the selected support tier and amount, without payment or customer data. Their explicit `$5 coffee` and `$10 coffee and snack` action names remain visible while other automatic action names stay masked.
 - The browser client token is intentionally public. Never add a Datadog API key or application key to this repository.
 
 Netlify's `_headers` file permits the Datadog Browser SDK and intake endpoints in the Content Security Policy. GitHub Pages does not apply `_headers`; configure equivalent headers at a proxy or CDN if one is added in front of that deployment.
@@ -140,3 +141,13 @@ python3 -m http.server 8001
 ```
 
 In browser developer tools, confirm that `datadog-rum.js` loads and requests to `browser-intake-datadoghq.com` are not blocked. New applications can take a few minutes to appear in the [Datadog RUM Explorer](https://app.datadoghq.com/rum/performance-monitoring?query=%40application.id%3A709e7d93-9fec-4547-9721-154d38c929ae).
+
+### Developer support monitor
+
+Create a **Real User Monitoring** monitor over the count of Action events with this search query:
+
+```text
+@application.id:709e7d93-9fec-4547-9721-154d38c929ae @action.type:custom @action.name:developer_support_clicked
+```
+
+Set the alert condition to **above 0 during the last 5 minutes**, then configure the desired email, Slack, or other notification destination. A monitor alerts on the first matching click while it is in the OK state; additional clicks before the monitor recovers are included in the count but do not each create a new alert transition.

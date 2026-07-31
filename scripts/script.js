@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
         shuffleButton: document.querySelector("#shuffle-button"),
         sortSelect: document.querySelector("#sort-select"),
         statusMessage: document.querySelector("#status-message"),
+        supportButtons: [...document.querySelectorAll("[data-support-tier]")],
         copyShareUrl: document.querySelector("#copy-share-url"),
         createCustomShare: document.querySelector("#create-custom-share"),
         customSelectionCount: document.querySelector("#custom-selection-count"),
@@ -1608,6 +1609,14 @@ document.addEventListener("DOMContentLoaded", () => {
         connect(elements.usernameInput.value);
     });
     elements.disconnectButton.addEventListener("click", disconnect);
+    elements.supportButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            trackRum("developer_support_clicked", {
+                support_tier: button.dataset.supportTier,
+                amount_usd: button.dataset.supportTier === "coffee" ? 5 : 10,
+            });
+        });
+    });
     elements.closeModal.addEventListener("click", closeModal);
     elements.modal.addEventListener("click", (event) => {
         if (event.target.hasAttribute("data-close-modal")) closeModal();
