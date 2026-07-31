@@ -126,7 +126,7 @@ The removed `data/input.csv` file remains in existing Git history. If it contain
 The production app uses [Datadog Browser RUM](https://docs.datadoghq.com/real_user_monitoring/application_monitoring/browser/setup/) to collect page performance, browser errors, resources, long tasks, and selected product events.
 
 - `scripts/rum.js` loads the Datadog Browser SDK and identifies Netlify, GitHub Pages, and local traffic with a `deployment` context value.
-- Session Replay is disabled. Automatic action names are privacy-protected and the default privacy level is `mask`.
+- Session Replay is enabled for 100% of monitored sessions. Automatic action names are privacy-protected and the default privacy level is `mask`.
 - Query strings, URL fragments, and Discogs usernames in resource paths are removed before events are sent.
 - Custom events contain aggregate counts and feature state only; usernames, searches, share descriptions, album IDs, and share URLs are not included.
 - The browser client token is intentionally public. Never add a Datadog API key or application key to this repository.

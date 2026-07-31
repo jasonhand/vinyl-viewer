@@ -55,7 +55,7 @@
             service: "vinyl-viewer",
             env: deployment === "local" ? "development" : "production",
             sessionSampleRate: 100,
-            sessionReplaySampleRate: 0,
+            sessionReplaySampleRate: 100,
             trackUserInteractions: true,
             trackResources: true,
             trackLongTasks: true,
