@@ -1,48 +1,282 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <link rel="icon" href="images/favicon.png" type="image/x-icon">
-    <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinyl Records App</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#15110d">
+    <meta name="referrer" content="no-referrer">
+    <meta name="description" content="Browse a personal collection of vinyl records by artist, title, label, and genre.">
+    <link rel="icon" href="images/favicon.png" type="image/png">
+    <title>Vinyl Viewer</title>
     <link rel="stylesheet" href="style/style.css">
 </head>
 <body>
-    <!-- Background image container -->
-    <div id="background-image-container"></div>
+    <div class="background" aria-hidden="true"></div>
 
-    <!-- Search form -->
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search records...">
-    </div>
-
-    <!-- Main content container -->
-    <div id="main-content">
-        <!-- Card container -->
-        <div id="card-container"></div>
-    </div>
-
-    <!-- Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="close">&times;</span>
-            <div id="modal-details">
-                <!-- Add a div to display the Spotify Album Art -->
-                <div id="album-art-container">
-                    <img id="album-art" src="" alt="Album Art">
-                    <div id="spotify-player-container"></div>
-                    <h2 id="modal-title">Title</h2>
-                    <p><strong id="modal-artist">Artist</strong></p>
-                    <a id="modal-spotify-link" href="#" target="_blank"><img src="images/spotify.png" alt="Spotify" width="50" height="50"></a>
-                    <a id="modal-discogs-link" href="#" target="_blank"><img src="images/discogs.png" alt="Discogs" width="50" height="50"></a>
-                    <div id="modal-high"></div><div id="modal-median"></div><div id="modal-low"></div> 
+    <header class="site-header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-mark" aria-hidden="true"><span></span></div>
+                <div>
+                    <p class="eyebrow">The listening room</p>
+                    <h1>Vinyl Viewer</h1>
                 </div>
             </div>
+            <p class="intro">Drop the needle on a hand-picked collection of bluegrass, folk, and country records.</p>
         </div>
+        <div id="navigation-row" class="navigation-row" hidden>
+            <nav class="view-nav" aria-label="Vinyl Viewer sections">
+                <button class="view-nav-button is-active" type="button" data-view="collection" aria-current="page">
+                    Collection <span id="collection-count">0</span>
+                </button>
+                <button class="view-nav-button" type="button" data-view="wantlist">
+                    Wantlist <span id="wantlist-count">0</span>
+                </button>
+                <button id="seller-view-button" class="view-nav-button" type="button" data-view="seller" hidden>
+                    For Sale <span id="seller-count">—</span>
+                </button>
+                <button class="view-nav-button" type="button" data-view="analytics">
+                    Analytics
+                </button>
+                <button class="view-nav-button" type="button" data-view="share">
+                    Share
+                </button>
+            </nav>
+            <div class="account-tools">
+                <span>Viewing <strong id="connected-username"></strong></span>
+                <button type="button" data-view="about">Who built this?</button>
+                <button id="disconnect-button" type="button">Disconnect</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="connection-screen" class="connection-screen" aria-labelledby="connection-heading" hidden>
+            <div class="connection-copy">
+                <p class="eyebrow">Connect to Discogs</p>
+                <h2 id="connection-heading">Whose shelf are we browsing?</h2>
+                <p>Enter a public Discogs username to load their collection, wantlist, and collection analytics.</p>
+            </div>
+            <form id="connection-form" class="connection-form">
+                <label for="username-input">Discogs username</label>
+                <div class="connection-field">
+                    <span aria-hidden="true">@</span>
+                    <input id="username-input" name="username" type="text" required maxlength="64" autocomplete="username" placeholder="username">
+                </div>
+                <button id="connect-button" type="submit">View collection</button>
+                <p id="connection-error" class="connection-error" role="alert" hidden></p>
+            </form>
+        </section>
+
+        <section id="collection-panel" class="collection-panel" aria-labelledby="collection-heading" hidden>
+            <div class="collection-heading">
+                <div>
+                    <p id="section-eyebrow" class="eyebrow">Record library</p>
+                    <h2 id="collection-heading">Browse the collection</h2>
+                </div>
+                <p id="result-count" class="result-count" aria-live="polite">Loading records…</p>
+            </div>
+            <div id="shared-banner" class="shared-banner" hidden>
+                <strong>Shared collection</strong>
+                <p id="shared-description"></p>
+            </div>
+
+            <div id="collection-controls" class="controls" aria-label="Collection filters">
+                <label class="search-field" for="search-input">
+                    <span class="sr-only">Search records</span>
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <path d="m21 21-4.4-4.4m2.4-5.1a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"></path>
+                    </svg>
+                    <input type="search" id="search-input" placeholder="Search artist, album, or label" autocomplete="off">
+                </label>
+
+                <label class="select-field">
+                    <span>Sort by</span>
+                    <select id="sort-select">
+                        <option value="shuffle">Shelf shuffle</option>
+                        <option value="artist">Artist A–Z</option>
+                        <option value="title">Album A–Z</option>
+                        <option value="newest">Recently added</option>
+                        <option value="rating">Highest rated</option>
+                    </select>
+                </label>
+
+                <button id="shuffle-button" class="secondary-button" type="button">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path>
+                    </svg>
+                    Shuffle
+                </button>
+            </div>
+
+            <div id="status-message" class="status-message" role="status">
+                <div class="loader" aria-hidden="true"></div>
+                <p>Pulling records from the shelf…</p>
+            </div>
+            <div id="card-container" class="record-grid" hidden></div>
+            <nav id="seller-pagination" class="seller-pagination" aria-label="Seller inventory pages" hidden>
+                <button id="seller-previous" type="button">Previous</button>
+                <p id="seller-page-status"></p>
+                <button id="seller-next" type="button">Next</button>
+                <a id="seller-profile-link" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">
+                    View full inventory on Discogs
+                </a>
+            </nav>
+            <div id="analytics-dashboard" class="analytics-dashboard" hidden></div>
+            <div id="share-page" class="share-page" hidden>
+                <div class="share-intro">
+                    <p class="eyebrow">Share collection</p>
+                    <h3>Send someone the perfect stack.</h3>
+                    <p>Create a link to the records currently filtered on your shelf, the complete collection, or an album-by-album custom selection.</p>
+                </div>
+
+                <div class="share-options">
+                    <button id="share-current-button" class="share-option" type="button">
+                        <span class="share-option-icon" aria-hidden="true">⌕</span>
+                        <strong>Share current view</strong>
+                        <span>Keep the current search and filters</span>
+                        <small id="share-current-count">0 records</small>
+                    </button>
+                    <button id="share-full-button" class="share-option" type="button">
+                        <span class="share-option-icon" aria-hidden="true">◉</span>
+                        <strong>Share full collection</strong>
+                        <span>Include every album on the shelf</span>
+                        <small id="share-full-count">0 records</small>
+                    </button>
+                    <button id="share-custom-button" class="share-option" type="button">
+                        <span class="share-option-icon" aria-hidden="true">✓</span>
+                        <strong>Custom selection</strong>
+                        <span>Choose individual albums to include</span>
+                        <small>Pick albums</small>
+                    </button>
+                </div>
+
+                <label class="share-description" for="share-description">
+                    <span>Collection description <small>(optional)</small></span>
+                    <textarea id="share-description" maxlength="500" placeholder="Add a note for the people opening your link…"></textarea>
+                </label>
+
+                <section id="custom-share-panel" class="custom-share-panel" hidden>
+                    <div class="custom-share-heading">
+                        <div>
+                            <h4>Build a custom collection</h4>
+                            <p id="custom-selection-count">0 albums selected</p>
+                        </div>
+                        <div>
+                            <button id="select-all-share" type="button">Select all</button>
+                            <button id="clear-share-selection" type="button">Clear</button>
+                        </div>
+                    </div>
+                    <label class="custom-share-search">
+                        <span class="sr-only">Search albums to share</span>
+                        <input id="custom-share-search" type="search" placeholder="Search albums or artists">
+                    </label>
+                    <div id="custom-share-grid" class="custom-share-grid"></div>
+                    <button id="create-custom-share" class="create-share-button" type="button" disabled>Create custom link</button>
+                </section>
+
+                <section id="share-result" class="share-result" hidden>
+                    <div>
+                        <p class="eyebrow">Your link is ready</p>
+                        <h4>Share it anywhere</h4>
+                    </div>
+                    <div class="share-link-field">
+                        <input id="share-url" type="text" readonly aria-label="Share URL">
+                        <button id="copy-share-url" type="button">Copy link</button>
+                    </div>
+                    <p id="share-status" role="status"></p>
+                </section>
+            </div>
+            <div id="about-page" class="about-page" hidden>
+                <div class="about-intro">
+                    <div class="about-record" aria-hidden="true"><span></span></div>
+                    <div>
+                        <p class="eyebrow">About Vinyl Viewer</p>
+                        <h3>Built for people who still love the whole album.</h3>
+                        <p>Vinyl Viewer makes it easy to share and explore public Discogs collections through a focused, artwork-first experience.</p>
+                    </div>
+                </div>
+
+                <div class="about-feature-grid">
+                    <article class="about-card">
+                        <span class="about-icon" aria-hidden="true">👥</span>
+                        <h4>View friends’ collections</h4>
+                        <p>Discover what your friends are spinning, browse their collection and wantlist, and get inspired by their musical taste.</p>
+                        <ul>
+                            <li>See album artwork in detail</li>
+                            <li>Browse by collection, year, or rating</li>
+                            <li>Open any album for complete details</li>
+                        </ul>
+                    </article>
+                    <article class="about-card">
+                        <span class="about-icon" aria-hidden="true">🎵</span>
+                        <h4>Your Discogs collection</h4>
+                        <p>Connect any public Discogs username to view its collection in a clean, responsive interface.</p>
+                        <ul>
+                            <li>Advanced filtering and sorting</li>
+                            <li>Collection statistics and insights</li>
+                            <li>Easy switching between collectors</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <section class="about-builder">
+                    <div>
+                        <p class="eyebrow">Who built this?</p>
+                        <h3>Created by Jason Hand</h3>
+                        <p>Developer, creator, and advocate building useful digital experiences for curious people.</p>
+                    </div>
+                    <div class="builder-links">
+                        <a href="https://jasonhand.com/" target="_blank" rel="noopener noreferrer">Visit Jason’s site</a>
+                        <a href="https://github.com/jasonhand/vinyl-viewer" target="_blank" rel="noopener noreferrer">View source</a>
+                    </div>
+                </section>
+
+                <section class="coffee-card">
+                    <div class="coffee-icon" aria-hidden="true">☕</div>
+                    <div>
+                        <p class="eyebrow">Support the project</p>
+                        <h3>Buy the developer coffee</h3>
+                        <p>Support the development, maintenance, and hosting costs of this tool.</p>
+                    </div>
+                    <div class="coffee-actions">
+                        <a href="https://buy.stripe.com/28E5kD26Lgnjfpr4XQ3oA00" target="_blank" rel="noopener noreferrer">$5 Coffee</a>
+                        <a href="https://buy.stripe.com/14AdR9aDhgnjcdf61U3oA01" target="_blank" rel="noopener noreferrer">$10 Coffee &amp; Snack</a>
+                    </div>
+                </section>
+
+                <p class="about-footer">Built with <span aria-label="love">♥</span> for vinyl enthusiasts everywhere.</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal" class="modal" hidden>
+        <div class="modal-backdrop" data-close-modal></div>
+        <section class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+            <button id="close-modal" class="modal-close" type="button" aria-label="Close record details">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+            </button>
+            <div id="modal-content"></div>
+        </section>
     </div>
 
-    <!-- JavaScript -->
+    <template id="record-card-template">
+        <article class="record-card">
+            <button class="record-card-button" type="button">
+                <div class="cover-wrap">
+                    <div class="cover-fallback" aria-hidden="true"><span></span></div>
+                    <img class="cover-image" alt="" loading="lazy">
+                    <div class="cover-shine" aria-hidden="true"></div>
+                </div>
+                <div class="record-copy">
+                    <p class="record-artist"></p>
+                    <h3 class="record-title"></h3>
+                    <div class="record-meta"></div>
+                </div>
+            </button>
+        </article>
+    </template>
+
     <script src="scripts/script.js"></script>
 </body>
 </html>

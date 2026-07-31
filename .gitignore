@@ -1,4 +1,4 @@
 data/input.csv
 data/convert.py
+data/schema.json
 .DS_Store
-```
