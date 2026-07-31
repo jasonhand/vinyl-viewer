@@ -82,7 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const DEFAULT_USERNAME = "jasonhand24";
     const DISCOGS_API = "https://api.discogs.com";
-    const DISCOGS_REQUEST_INTERVAL = 1100;
+    const DISCOGS_REQUEST_INTERVAL = 2600;
+    const DISCOGS_RETRY_DELAY = 5000;
     const MAX_SHARE_DESCRIPTION_LENGTH = 500;
     const MAX_SHARE_IDS = 500;
     const MAX_SHARE_QUERY_LENGTH = 100;
@@ -227,14 +228,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function fetchDiscogs(path) {
         const request = discogsRequestQueue.then(async () => {
-            const waitTime = DISCOGS_REQUEST_INTERVAL - (Date.now() - lastDiscogsRequestTime);
-            if (waitTime > 0) {
-                await new Promise((resolve) => window.setTimeout(resolve, waitTime));
+            let response;
+            for (let attempt = 0; attempt < 2; attempt += 1) {
+                const waitTime = DISCOGS_REQUEST_INTERVAL - (Date.now() - lastDiscogsRequestTime);
+                if (waitTime > 0) {
+                    await new Promise((resolve) => window.setTimeout(resolve, waitTime));
+                }
+                lastDiscogsRequestTime = Date.now();
+
+                try {
+                    response = await fetch(`${DISCOGS_API}${path}`, {
+                        headers: { Accept: "application/vnd.discogs.v2.discogs+json" },
+                    });
+                    break;
+                } catch (error) {
+                    if (!(error instanceof TypeError) || attempt === 1) throw error;
+                    await new Promise((resolve) => window.setTimeout(resolve, DISCOGS_RETRY_DELAY));
+                }
             }
-            lastDiscogsRequestTime = Date.now();
-            const response = await fetch(`${DISCOGS_API}${path}`, {
-                headers: { Accept: "application/vnd.discogs.v2.discogs+json" },
-            });
 
             if (!response.ok) {
                 let message = "";
