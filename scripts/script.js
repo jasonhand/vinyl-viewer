@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
         analyticsDashboard: document.querySelector("#analytics-dashboard"),
         cardContainer: document.querySelector("#card-container"),
         cardTemplate: document.querySelector("#record-card-template"),
+        clearSharedView: document.querySelector("#clear-shared-view"),
         collectionPanel: document.querySelector("#collection-panel"),
         collectionControls: document.querySelector("#collection-controls"),
         collectionCount: document.querySelector("#collection-count"),
@@ -60,9 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const state = {
         activeView: "collection",
+        analyticsScope: "collection",
+        artistFilter: "",
         artistMetadata: new Map(),
         customShareIds: new Set(),
         lastFocusedElement: null,
+        labelFilter: "",
         localMetadata: new Map(),
         modalRequestId: 0,
         pendingShare: null,
@@ -360,7 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateNavigation() {
-        elements.collectionCount.textContent = state.records.length;
+        elements.collectionCount.textContent = getSharedCollectionRecords().length;
         elements.wantlistCount.textContent = state.wantlistRecords.length;
         elements.sellerCount.textContent = state.sellerInventoryTotal === null
             ? "—"
@@ -399,9 +403,15 @@ document.addEventListener("DOMContentLoaded", () => {
             fallback.classList.add("is-visible");
         }
 
-        if (record.collection) metadata.append(createTag(record.collection));
+        if (record.collection && record.collection !== "Collection") metadata.append(createTag(record.collection));
         if (record.sellerPrice) metadata.append(createTag(record.sellerPrice));
-        if (record.releaseYear) metadata.append(createTag(String(record.releaseYear)));
+        if (record.releaseYear) {
+            const year = document.createElement("time");
+            year.className = "record-year";
+            year.dateTime = String(record.releaseYear);
+            year.textContent = String(record.releaseYear);
+            metadata.append(year);
+        }
         if (record.rating) metadata.append(createTag(`${record.rating}/5 ★`));
 
         button.setAttribute("aria-label", `View ${record.title} by ${record.artist}`);
@@ -410,13 +420,24 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.cardContainer.append(fragment);
     }
 
+    function recordMatchesQuery(record, query) {
+        const normalizedQuery = query.trim().toLocaleLowerCase();
+        if (!normalizedQuery) return true;
+        if (state.artistFilter && normalizedQuery === state.artistFilter.toLocaleLowerCase()) {
+            const artistNames = record.artistNames?.length ? record.artistNames : [record.artist];
+            return artistNames.some((artist) => artist.toLocaleLowerCase() === normalizedQuery);
+        }
+        if (state.labelFilter && normalizedQuery === state.labelFilter.toLocaleLowerCase()) {
+            return record.label.toLocaleLowerCase() === normalizedQuery;
+        }
+        const searchText = `${record.artist} ${record.title} ${record.label} ${record.catalogNumber} ${record.sellerComments || ""}`.toLocaleLowerCase();
+        return searchText.includes(normalizedQuery);
+    }
+
     function filterAndSortRecords(sourceRecords) {
-        const query = elements.searchInput.value.trim().toLocaleLowerCase();
+        const query = elements.searchInput.value;
         const sort = elements.sortSelect.value;
-        const visibleRecords = sourceRecords.filter((record) => {
-            const searchText = `${record.artist} ${record.title} ${record.label} ${record.catalogNumber} ${record.sellerComments || ""}`.toLocaleLowerCase();
-            return !query || searchText.includes(query);
-        });
+        const visibleRecords = sourceRecords.filter((record) => recordMatchesQuery(record, query));
 
         const sorters = {
             artist: (first, second) => collator.compare(first.artist, second.artist) || collator.compare(first.title, second.title),
@@ -434,13 +455,17 @@ document.addEventListener("DOMContentLoaded", () => {
             ? state.wantlistRecords
             : state.activeView === "seller"
                 ? state.sellerRecords
-                : state.records.filter((record) => !state.sharedRecordIds || state.sharedRecordIds.has(record.shareId));
+                : getSharedCollectionRecords();
         return filterAndSortRecords(sourceRecords);
     }
 
+    function getSharedCollectionRecords() {
+        if (!state.isSharedView || !state.sharedRecordIds) return state.records;
+        return state.records.filter((record) => state.sharedRecordIds.has(record.shareId));
+    }
+
     function getFilteredCollectionRecords() {
-        const records = state.records.filter((record) => !state.sharedRecordIds || state.sharedRecordIds.has(record.shareId));
-        return filterAndSortRecords(records);
+        return filterAndSortRecords(getSharedCollectionRecords());
     }
 
     function createStatCard(label, value, detail) {
@@ -536,9 +561,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return element;
     }
 
-    function createTimeline(yearEntries) {
+    function createTimeline(yearEntries, sourceLabel) {
         const section = createAnalyticsSection(
-            "Collection Timeline",
+            `${sourceLabel} Timeline`,
             "Album count by original release year",
             "analytics-visual analytics-timeline",
         );
@@ -546,7 +571,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (yearEntries.length === 0) {
             const empty = document.createElement("p");
             empty.className = "analytics-empty";
-            empty.textContent = "No release-year data is available for this collection.";
+            empty.textContent = `No release-year data is available for this ${sourceLabel.toLocaleLowerCase()}.`;
             section.append(empty);
             return section;
         }
@@ -573,7 +598,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const svg = createSvgElement("svg", {
             viewBox: `0 0 ${width} ${height}`,
             role: "img",
-            "aria-label": `Collection timeline from ${firstYear} to ${lastYear}`,
+            "aria-label": `${sourceLabel} timeline from ${firstYear} to ${lastYear}`,
         });
         wrapper.className = "timeline-scroll";
         svg.classList.add("timeline-chart");
@@ -637,10 +662,25 @@ document.addEventListener("DOMContentLoaded", () => {
         return section;
     }
 
-    function createArtistTable(entries) {
+    function showDistributionRecords(filterType, value) {
+        const scope = state.analyticsScope;
+        state.activeView = scope;
+        state.artistFilter = filterType === "artist" ? value : "";
+        state.labelFilter = filterType === "label" ? value : "";
+        elements.searchInput.value = value;
+        updateNavigation();
+        renderRecords();
+        trackRum(`analytics_${filterType}_selected`, { scope });
+        requestAnimationFrame(() => {
+            elements.collectionControls.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    }
+
+    function createDistributionTable(title, itemLabel, entries, sourceLabel, filterType) {
+        const itemLabelLower = itemLabel.toLocaleLowerCase();
         const section = createAnalyticsSection(
-            "Artist Distribution",
-            "Top 10 artists by albums in the collection",
+            `${title} Distribution`,
+            `Top 10 ${itemLabelLower}s by albums in the ${sourceLabel.toLocaleLowerCase()}. Select one to see matching records.`,
             "analytics-visual analytics-table-card",
         );
         const wrapper = document.createElement("div");
@@ -651,7 +691,7 @@ document.addEventListener("DOMContentLoaded", () => {
         wrapper.className = "artist-table-wrap";
         table.className = "artist-table";
 
-        ["Rank", "Artist", "Albums"].forEach((label) => {
+        ["Rank", itemLabel, "Albums"].forEach((label) => {
             const heading = document.createElement("th");
             heading.scope = "col";
             heading.textContent = label;
@@ -659,13 +699,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         head.append(headRow);
 
-        entries.slice(0, 10).forEach(([artist, count], index) => {
+        entries.slice(0, 10).forEach(([nameValue, count], index) => {
             const row = document.createElement("tr");
             const rank = document.createElement("td");
             const name = document.createElement("td");
             const albums = document.createElement("td");
+            const filterButton = document.createElement("button");
             rank.textContent = index + 1;
-            name.textContent = artist;
+            filterButton.type = "button";
+            filterButton.className = "distribution-filter-button";
+            filterButton.textContent = nameValue;
+            filterButton.setAttribute(
+                "aria-label",
+                `Show records for ${itemLabelLower} ${nameValue} in the ${sourceLabel.toLocaleLowerCase()}`,
+            );
+            filterButton.addEventListener("click", () => showDistributionRecords(filterType, nameValue));
+            name.append(filterButton);
             albums.textContent = count;
             row.append(rank, name, albums);
             body.append(row);
@@ -676,10 +725,52 @@ document.addEventListener("DOMContentLoaded", () => {
         return section;
     }
 
+    function createAnalyticsScopeControl() {
+        const control = document.createElement("div");
+        const copy = document.createElement("div");
+        const title = document.createElement("strong");
+        const description = document.createElement("p");
+        const buttons = document.createElement("div");
+        control.className = "analytics-scope";
+        buttons.className = "analytics-scope-buttons";
+        buttons.setAttribute("role", "group");
+        buttons.setAttribute("aria-label", "Choose records to analyze");
+        title.textContent = "Analyze";
+        description.textContent = "Choose which shelf these insights describe.";
+        copy.append(title, description);
+
+        [
+            ["collection", state.isSharedView ? "Shared collection" : "Collection", getSharedCollectionRecords().length],
+            ["wantlist", "Wantlist", state.wantlistRecords.length],
+        ].forEach(([scope, label, count]) => {
+            const button = document.createElement("button");
+            const countBadge = document.createElement("span");
+            const isActive = state.analyticsScope === scope;
+            button.type = "button";
+            button.classList.toggle("is-active", isActive);
+            button.setAttribute("aria-pressed", String(isActive));
+            button.append(document.createTextNode(label));
+            countBadge.textContent = count;
+            button.append(countBadge);
+            button.addEventListener("click", () => {
+                if (state.analyticsScope === scope) return;
+                state.analyticsScope = scope;
+                trackRum("analytics_scope_changed", { scope });
+                renderRecords();
+            });
+            buttons.append(button);
+        });
+        control.append(copy, buttons);
+        return control;
+    }
+
     function renderAnalytics() {
-        const records = state.records;
+        const isWantlist = state.analyticsScope === "wantlist";
+        const records = isWantlist ? state.wantlistRecords : getSharedCollectionRecords();
+        const sourceLabel = isWantlist ? "Wantlist" : "Collection";
         const artistEntries = countValues(records.flatMap((record) => record.artistNames?.length ? record.artistNames : [record.artist]));
         const genreEntries = countValues(records.flatMap((record) => record.genres || []));
+        const labelEntries = countValues(records.map((record) => record.label));
         const yearEntries = countValues(records.map((record) => record.releaseYear ? String(record.releaseYear) : ""))
             .sort((first, second) => Number(first[0]) - Number(second[0]));
         const stats = document.createElement("div");
@@ -687,20 +778,29 @@ document.addEventListener("DOMContentLoaded", () => {
         stats.className = "analytics-stats";
         donuts.className = "analytics-donuts";
         stats.append(
-            createStatCard("Total records", String(records.length), `@${state.profile?.username || ""}'s collection`),
+            createStatCard(
+                "Total records",
+                String(records.length),
+                isWantlist
+                    ? `@${state.profile?.username || ""}'s wantlist`
+                    : state.isSharedView ? "Records in this shared collection" : `@${state.profile?.username || ""}'s collection`,
+            ),
             createStatCard("Artists", String(artistEntries.length), "Unique credited artists"),
             createStatCard("Genres", String(genreEntries.length), "Unique Discogs genres"),
             createStatCard("Years", String(yearEntries.length), "Release years represented"),
         );
         donuts.append(
             createDonutChart("Top 5 Genres", genreEntries.slice(0, 5), "Most represented genres"),
-            createDonutChart("Top 5 Artists", artistEntries.slice(0, 5), "Most collected artists"),
+            createDonutChart("Top 5 Artists", artistEntries.slice(0, 5), isWantlist ? "Most wanted artists" : "Most collected artists"),
+            createDonutChart("Top 5 Labels", labelEntries.slice(0, 5), "Most represented record labels"),
         );
         elements.analyticsDashboard.replaceChildren(
+            createAnalyticsScopeControl(),
             stats,
             donuts,
-            createTimeline(yearEntries),
-            createArtistTable(artistEntries),
+            createTimeline(yearEntries, sourceLabel),
+            createDistributionTable("Artist", "Artist", artistEntries, sourceLabel, "artist"),
+            createDistributionTable("Label", "Label", labelEntries, sourceLabel, "label"),
         );
     }
 
@@ -852,13 +952,21 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.cardContainer.hidden = true;
         elements.statusMessage.hidden = true;
         elements.sellerPagination.hidden = true;
-        elements.sharedBanner.hidden = !(state.isSharedView && state.activeView === "collection");
+        const showsSharedCollection = state.activeView === "collection"
+            || (state.activeView === "analytics" && state.analyticsScope === "collection");
+        elements.sharedBanner.hidden = !(state.isSharedView && showsSharedCollection);
         elements.sharedDescription.textContent = state.sharedDescription || "A collection shared from Vinyl Viewer.";
 
         if (isAnalytics) {
-            elements.sectionEyebrow.textContent = "Collection insights";
-            elements.collectionHeading.textContent = "Analytics";
-            elements.resultCount.textContent = `${state.records.length} records analyzed`;
+            const isWantlistAnalytics = state.analyticsScope === "wantlist";
+            const analyticsRecords = isWantlistAnalytics ? state.wantlistRecords : getSharedCollectionRecords();
+            elements.sectionEyebrow.textContent = isWantlistAnalytics
+                ? "Wantlist insights"
+                : state.isSharedView ? "Shared collection insights" : "Collection insights";
+            elements.collectionHeading.textContent = isWantlistAnalytics
+                ? "Wantlist analytics"
+                : state.isSharedView ? "Shared collection analytics" : "Collection analytics";
+            elements.resultCount.textContent = `${analyticsRecords.length} records analyzed`;
             renderAnalytics();
             return;
         }
@@ -924,9 +1032,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ? state.sellerInventoryTotal || 0
             : isWantlist
             ? state.wantlistRecords.length
-            : state.sharedRecordIds
-                ? state.records.filter((record) => state.sharedRecordIds.has(record.shareId)).length
-                : state.records.length;
+            : getSharedCollectionRecords().length;
         elements.resultCount.textContent = isSeller
             ? `${visibleRecords.length} shown · ${total.toLocaleString()} active listings`
             : visibleRecords.length === total
@@ -1453,6 +1559,8 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.connectedUsername.textContent = `@${state.profile.username}`;
         elements.searchInput.value = "";
         elements.sortSelect.value = "shuffle";
+        state.artistFilter = "";
+        state.labelFilter = "";
         state.sharedRecordIds = null;
         state.sharedDescription = "";
         state.isSharedView = false;
@@ -1465,6 +1573,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 elements.searchInput.value = shared.query;
                 elements.sortSelect.value = [...elements.sortSelect.options]
                     .some((option) => option.value === shared.sort) ? shared.sort : "shuffle";
+                if (shared.query) {
+                    state.sharedRecordIds = new Set(
+                        state.records
+                            .filter((record) => recordMatchesQuery(record, shared.query))
+                            .map((record) => record.shareId),
+                    );
+                }
             } else if (shared.mode === "custom") {
                 state.sharedRecordIds = shared.ids;
             }
@@ -1523,6 +1638,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function disconnect() {
         localStorage.removeItem("vinyl-viewer-username");
         state.activeView = "collection";
+        state.analyticsScope = "collection";
+        state.artistFilter = "";
+        state.labelFilter = "";
         state.profile = null;
         state.records = [];
         state.customShareIds = new Set();
@@ -1544,7 +1662,32 @@ document.addEventListener("DOMContentLoaded", () => {
         trackRum("discogs_user_disconnected");
     }
 
-    elements.searchInput.addEventListener("input", renderRecords);
+    function clearSharedView() {
+        if (!state.isSharedView) return;
+        state.isSharedView = false;
+        state.sharedDescription = "";
+        state.sharedRecordIds = null;
+        state.pendingShare = null;
+        state.artistFilter = "";
+        state.labelFilter = "";
+        elements.searchInput.value = "";
+        elements.sortSelect.value = "shuffle";
+
+        const url = new URL(window.location.href);
+        ["shared", "mode", "q", "sort", "description", "ids"].forEach((parameter) => {
+            url.searchParams.delete(parameter);
+        });
+        window.history.replaceState({}, "", url);
+        updateNavigation();
+        renderRecords();
+        trackRum("shared_view_cleared");
+    }
+
+    elements.searchInput.addEventListener("input", () => {
+        state.artistFilter = "";
+        state.labelFilter = "";
+        renderRecords();
+    });
     elements.sortSelect.addEventListener("change", renderRecords);
     elements.shuffleButton.addEventListener("click", () => {
         shuffle(state.activeView === "seller" ? state.sellerRecords : state.records);
@@ -1553,7 +1696,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     elements.viewButtons.forEach((button) => {
         button.addEventListener("click", () => {
-            state.activeView = button.dataset.view;
+            const nextView = button.dataset.view;
+            if (["collection", "wantlist"].includes(nextView)) state.analyticsScope = nextView;
+            state.activeView = nextView;
             trackRum("app_view_changed", { view: state.activeView });
             updateNavigation();
             renderRecords();
@@ -1609,6 +1754,7 @@ document.addEventListener("DOMContentLoaded", () => {
         connect(elements.usernameInput.value);
     });
     elements.disconnectButton.addEventListener("click", disconnect);
+    elements.clearSharedView.addEventListener("click", clearSharedView);
     elements.supportButtons.forEach((button) => {
         button.addEventListener("click", () => {
             trackRum("developer_support_clicked", {

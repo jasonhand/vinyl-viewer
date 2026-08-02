@@ -23,7 +23,6 @@
                     <h1>Vinyl Viewer</h1>
                 </div>
             </div>
-            <p class="intro">Drop the needle on a hand-picked collection of bluegrass, folk, and country records.</p>
         </div>
         <div id="navigation-row" class="navigation-row" hidden>
             <nav class="view-nav" aria-label="Vinyl Viewer sections">
@@ -42,12 +41,12 @@
                 <button class="view-nav-button" type="button" data-view="share">
                     Share
                 </button>
+                <div class="account-tools">
+                    <span>Viewing <strong id="connected-username"></strong></span>
+                    <button type="button" data-view="about">Who built this?</button>
+                    <button id="disconnect-button" type="button">Disconnect</button>
+                </div>
             </nav>
-            <div class="account-tools">
-                <span>Viewing <strong id="connected-username"></strong></span>
-                <button type="button" data-view="about">Who built this?</button>
-                <button id="disconnect-button" type="button">Disconnect</button>
-            </div>
         </div>
     </header>
 
@@ -78,8 +77,11 @@
                 <p id="result-count" class="result-count" aria-live="polite">Loading records…</p>
             </div>
             <div id="shared-banner" class="shared-banner" hidden>
-                <strong>Shared collection</strong>
-                <p id="shared-description"></p>
+                <div class="shared-banner-copy">
+                    <strong>Shared collection</strong>
+                    <p id="shared-description"></p>
+                </div>
+                <button id="clear-shared-view" type="button">View full collection</button>
             </div>
 
             <div id="collection-controls" class="controls" aria-label="Collection filters">

@@ -36,11 +36,12 @@ Open a record to see release metadata, external links, track information, Spotif
 - Browse a public Discogs collection and wantlist.
 - Search by artist, album, or label.
 - Sort records or shuffle the current shelf.
-- View collection analytics for genres, artists, and release years.
+- View artist, genre, label, and release-year analytics for a full collection, a wantlist, or only the records in a shared collection, then select an artist or label to browse matching albums.
 - Open album details, track listings, Discogs marketplace links, artist sites, and group memberships.
 - Play supported albums through an embedded Spotify player.
 - Jump between related albums by the same artist.
 - Share a filtered view, the complete collection, or a custom album selection.
+- Exit a shared view to browse the owner's full collection without disconnecting.
 - Disconnect and load a different Discogs username.
 - Open the project information and developer support links from **Who built this?**
 - Optionally browse public seller inventory through an experimental feature flag.
