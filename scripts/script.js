@@ -438,10 +438,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const query = elements.searchInput.value;
         const sort = elements.sortSelect.value;
         const visibleRecords = sourceRecords.filter((record) => recordMatchesQuery(record, query));
+        const byArtistAndTitle = (first, second) => collator.compare(first.artist, second.artist)
+            || collator.compare(first.title, second.title);
+        const byReleaseYear = (first, second, direction) => {
+            const firstYear = Number(first.releaseYear) || 0;
+            const secondYear = Number(second.releaseYear) || 0;
+            if (!firstYear && secondYear) return 1;
+            if (firstYear && !secondYear) return -1;
+            return direction * (firstYear - secondYear) || byArtistAndTitle(first, second);
+        };
 
         const sorters = {
-            artist: (first, second) => collator.compare(first.artist, second.artist) || collator.compare(first.title, second.title),
+            artist: byArtistAndTitle,
             title: (first, second) => collator.compare(first.title, second.title) || collator.compare(first.artist, second.artist),
+            "release-newest": (first, second) => byReleaseYear(first, second, -1),
+            "release-oldest": (first, second) => byReleaseYear(first, second, 1),
             newest: (first, second) => second.dateAdded.localeCompare(first.dateAdded),
             rating: (first, second) => (second.rating || 0) - (first.rating || 0) || collator.compare(first.artist, second.artist),
             shuffle: (first, second) => state.shuffleOrder.get(first.id) - state.shuffleOrder.get(second.id),
@@ -927,7 +938,7 @@ document.addEventListener("DOMContentLoaded", () => {
             username,
             mode: ["current", "full", "custom"].includes(requestedMode) ? requestedMode : "full",
             query: (params.get("q") || "").slice(0, MAX_SHARE_QUERY_LENGTH),
-            sort: ["shuffle", "artist", "title", "newest", "rating"].includes(requestedSort)
+            sort: ["shuffle", "artist", "title", "release-newest", "release-oldest", "newest", "rating"].includes(requestedSort)
                 ? requestedSort
                 : "shuffle",
             description: (params.get("description") || "").slice(0, MAX_SHARE_DESCRIPTION_LENGTH),
