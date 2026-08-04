@@ -1,5 +1,5 @@
 /*
-  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://api.discogs.com https://browser-intake-datadoghq.com https://*.browser-intake-datadoghq.com; font-src 'self' https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src https://open.spotify.com; img-src 'self' data: https:; object-src 'none'; script-src 'self' https://www.datadoghq-browser-agent.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://api.discogs.com https://browser-intake-datadoghq.com https://*.browser-intake-datadoghq.com; font-src 'self' https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src https://open.spotify.com; img-src 'self' data: https:; object-src 'none'; script-src 'self' https://www.datadoghq-browser-agent.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; worker-src blob:; upgrade-insecure-requests
   Cross-Origin-Opener-Policy: same-origin
   Permissions-Policy: autoplay=(self "https://open.spotify.com"), camera=(), geolocation=(), microphone=(), payment=(), usb=()
   Referrer-Policy: no-referrer

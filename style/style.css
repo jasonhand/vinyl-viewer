@@ -74,7 +74,7 @@ main {
 
 .header-content {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     gap: 36px;
 }
@@ -134,16 +134,20 @@ h1 {
 }
 
 .navigation-row {
-    margin-top: 34px;
-    padding-bottom: 2px;
+    display: flex;
+    align-items: flex-end;
+    flex: 1;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
 }
 
 .view-nav {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     flex-wrap: wrap;
     gap: 8px;
-    width: 100%;
 }
 
 .view-nav-button {
@@ -184,33 +188,180 @@ h1 {
 .account-tools {
     display: flex;
     align-items: center;
-    margin-left: auto;
-    gap: 12px;
+    justify-content: flex-end;
+    gap: 10px;
     color: var(--muted);
     font-size: 0.82rem;
 }
 
-.account-tools strong {
-    color: var(--cream);
+.support-menu {
+    position: relative;
 }
 
-.account-tools button {
-    padding: 8px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 9px;
+.account-tools .support-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 14px;
+    border: 1px solid var(--amber);
+    border-radius: 10px;
+    color: #21170b;
+    background: var(--amber);
+    font-weight: 700;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
+    transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.account-tools .support-toggle:hover,
+.account-tools .support-toggle[aria-expanded="true"] {
+    background: var(--amber-light);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    transform: translateY(-1px);
+}
+
+.support-popover {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    z-index: 20;
+    width: min(310px, calc(100vw - 32px));
+    padding: 20px;
+    border: 1px solid rgba(229, 169, 79, 0.32);
+    border-radius: 14px;
+    color: var(--cream);
+    background: rgba(24, 19, 15, 0.98);
+    box-shadow: var(--shadow);
+}
+
+.support-popover::before {
+    position: absolute;
+    top: -6px;
+    left: 26px;
+    width: 10px;
+    height: 10px;
+    border-top: 1px solid rgba(229, 169, 79, 0.32);
+    border-left: 1px solid rgba(229, 169, 79, 0.32);
+    content: "";
+    background: #18130f;
+    transform: rotate(45deg);
+}
+
+.support-popover .eyebrow {
+    margin-bottom: 7px;
+    font-size: 0.64rem;
+}
+
+.support-popover > strong {
+    display: block;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.35rem;
+}
+
+.support-popover > p:not(.eyebrow) {
+    margin: 5px 0 16px;
     color: var(--muted);
+}
+
+.support-popover-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.support-popover-actions a {
+    padding: 10px 9px;
+    border: 1px solid var(--stroke);
+    border-radius: 9px;
+    color: var(--cream);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
     background: rgba(255, 255, 255, 0.04);
 }
 
-.account-tools button:hover {
-    border-color: rgba(229, 169, 79, 0.45);
+.support-popover-actions a:first-child {
+    border-color: var(--amber);
+    color: #21170b;
+    background: var(--amber);
+}
+
+.support-popover-actions a:hover {
+    border-color: var(--amber);
     color: var(--amber-light);
 }
 
-.account-tools button.is-active {
-    border-color: rgba(229, 169, 79, 0.45);
+.support-popover-actions a:first-child:hover {
+    color: #21170b;
+    background: var(--amber-light);
+}
+
+.support-popover > small {
+    display: block;
+    margin-top: 11px;
+    color: #93887d;
+    font-size: 0.66rem;
+    text-align: center;
+}
+
+.profile-tools {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px 8px 14px;
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.profile-summary {
+    display: grid;
+    gap: 1px;
+}
+
+.profile-summary small {
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.profile-summary strong {
+    color: var(--cream);
+    font-size: 0.88rem;
+}
+
+.account-tools .builder-button {
+    padding: 10px 14px;
+    border: 1px solid rgba(229, 169, 79, 0.35);
+    border-radius: 10px;
     color: var(--amber-light);
-    background: rgba(229, 169, 79, 0.1);
+    background: rgba(229, 169, 79, 0.09);
+    font-weight: 700;
+}
+
+.account-tools .builder-button:hover,
+.account-tools .builder-button.is-active {
+    border-color: rgba(229, 169, 79, 0.45);
+    color: var(--cream);
+    background: rgba(229, 169, 79, 0.16);
+}
+
+.account-tools .disconnect-button {
+    padding: 3px 0;
+    border: 0;
+    color: #93887d;
+    background: transparent;
+    font-size: 0.7rem;
+    text-decoration: underline;
+    text-decoration-color: rgba(147, 136, 125, 0.45);
+    text-underline-offset: 3px;
+}
+
+.account-tools .disconnect-button:hover {
+    color: var(--muted);
+    text-decoration-color: currentColor;
 }
 
 .connection-screen {
@@ -2026,6 +2177,16 @@ h1 {
         gap: 22px;
     }
 
+    .navigation-row {
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .account-tools,
+    .view-nav {
+        justify-content: flex-end;
+    }
+
     .controls {
         grid-template-columns: 1fr 1fr;
     }
@@ -2099,15 +2260,42 @@ h1 {
     }
 
     .navigation-row {
-        margin-top: 24px;
+        gap: 12px;
     }
 
     .account-tools {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-content: stretch;
+        width: 100%;
+    }
+
+    .support-menu,
+    .account-tools .support-toggle,
+    .account-tools .builder-button {
+        width: 100%;
+    }
+
+    .account-tools .support-toggle,
+    .account-tools .builder-button {
+        justify-content: center;
+    }
+
+    .profile-tools {
         grid-column: 1 / -1;
         justify-content: space-between;
-        margin-left: 0;
+        min-width: 0;
         width: 100%;
-        flex-wrap: wrap;
+    }
+
+    .profile-summary {
+        min-width: 0;
+    }
+
+    .profile-summary strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .shared-banner {

@@ -8,8 +8,8 @@
     <meta name="description" content="Browse a personal collection of vinyl records by artist, title, label, and genre.">
     <link rel="icon" href="images/favicon.png" type="image/png">
     <title>Vinyl Viewer</title>
-    <script src="scripts/rum.js"></script>
-    <link rel="stylesheet" href="style/style.css">
+    <script src="scripts/rum.js?v=20260804-support"></script>
+    <link rel="stylesheet" href="style/style.css?v=20260804-support">
 </head>
 <body>
     <div class="background" aria-hidden="true"></div>
@@ -23,30 +23,50 @@
                     <h1>Vinyl Viewer</h1>
                 </div>
             </div>
-        </div>
-        <div id="navigation-row" class="navigation-row" hidden>
-            <nav class="view-nav" aria-label="Vinyl Viewer sections">
-                <button class="view-nav-button is-active" type="button" data-view="collection" aria-current="page">
-                    Collection <span id="collection-count">0</span>
-                </button>
-                <button class="view-nav-button" type="button" data-view="wantlist">
-                    Wantlist <span id="wantlist-count">0</span>
-                </button>
-                <button id="seller-view-button" class="view-nav-button" type="button" data-view="seller" hidden>
-                    For Sale <span id="seller-count">—</span>
-                </button>
-                <button class="view-nav-button" type="button" data-view="analytics">
-                    Analytics
-                </button>
-                <button class="view-nav-button" type="button" data-view="share">
-                    Share
-                </button>
+            <div id="navigation-row" class="navigation-row" hidden>
                 <div class="account-tools">
-                    <span>Viewing <strong id="connected-username"></strong></span>
-                    <button type="button" data-view="about">Who built this?</button>
-                    <button id="disconnect-button" type="button">Disconnect</button>
+                    <div id="support-menu" class="support-menu">
+                        <button id="support-toggle" class="support-toggle" type="button" aria-expanded="false" aria-controls="support-popover">
+                            <span aria-hidden="true">☕</span> Support
+                        </button>
+                        <div id="support-popover" class="support-popover" aria-labelledby="support-popover-title" hidden>
+                            <p class="eyebrow">Support the project</p>
+                            <strong id="support-popover-title">Enjoy Vinyl Viewer?</strong>
+                            <p>Help keep it running.</p>
+                            <div class="support-popover-actions">
+                                <a href="https://buy.stripe.com/28E5kD26Lgnjfpr4XQ3oA00" target="_blank" rel="noopener noreferrer" data-support-tier="coffee" data-support-placement="header" data-dd-action-name="Buy developer $5 coffee">$5 Coffee</a>
+                                <a href="https://buy.stripe.com/14AdR9aDhgnjcdf61U3oA01" target="_blank" rel="noopener noreferrer" data-support-tier="coffee-and-snack" data-support-placement="header" data-dd-action-name="Buy developer $10 coffee and snack">$10 Coffee + Snack</a>
+                            </div>
+                            <small>Secure checkout with Stripe</small>
+                        </div>
+                    </div>
+                    <button class="builder-button" type="button" data-view="about">Who built this?</button>
+                    <div class="profile-tools">
+                        <span class="profile-summary">
+                            <small>Viewing profile</small>
+                            <strong id="connected-username"></strong>
+                        </span>
+                        <button id="disconnect-button" class="disconnect-button" type="button">Disconnect</button>
+                    </div>
                 </div>
-            </nav>
+                <nav class="view-nav" aria-label="Vinyl Viewer sections">
+                    <button class="view-nav-button is-active" type="button" data-view="collection" aria-current="page">
+                        Collection <span id="collection-count">0</span>
+                    </button>
+                    <button class="view-nav-button" type="button" data-view="wantlist">
+                        Wantlist <span id="wantlist-count">0</span>
+                    </button>
+                    <button id="seller-view-button" class="view-nav-button" type="button" data-view="seller" hidden>
+                        For Sale <span id="seller-count">—</span>
+                    </button>
+                    <button class="view-nav-button" type="button" data-view="analytics">
+                        Analytics
+                    </button>
+                    <button class="view-nav-button" type="button" data-view="share">
+                        Share
+                    </button>
+                </nav>
+            </div>
         </div>
     </header>
 
@@ -242,11 +262,11 @@
                     <div>
                         <p class="eyebrow">Support the project</p>
                         <h3>Buy the developer coffee</h3>
-                        <p>Support the development, maintenance, and hosting costs of this tool.</p>
+                        <p>Enjoying Vinyl Viewer? Help keep it running.</p>
                     </div>
                     <div class="coffee-actions">
-                        <a href="https://buy.stripe.com/28E5kD26Lgnjfpr4XQ3oA00" target="_blank" rel="noopener noreferrer" data-support-tier="coffee" data-dd-action-name="Buy developer $5 coffee">$5 Coffee</a>
-                        <a href="https://buy.stripe.com/14AdR9aDhgnjcdf61U3oA01" target="_blank" rel="noopener noreferrer" data-support-tier="coffee-and-snack" data-dd-action-name="Buy developer $10 coffee and snack">$10 Coffee &amp; Snack</a>
+                        <a href="https://buy.stripe.com/28E5kD26Lgnjfpr4XQ3oA00" target="_blank" rel="noopener noreferrer" data-support-tier="coffee" data-support-placement="about" data-dd-action-name="Buy developer $5 coffee">$5 Coffee</a>
+                        <a href="https://buy.stripe.com/14AdR9aDhgnjcdf61U3oA01" target="_blank" rel="noopener noreferrer" data-support-tier="coffee-and-snack" data-support-placement="about" data-dd-action-name="Buy developer $10 coffee and snack">$10 Coffee + Snack</a>
                     </div>
                 </section>
 
@@ -282,6 +302,6 @@
         </article>
     </template>
 
-    <script src="scripts/script.js"></script>
+    <script src="scripts/script.js?v=20260804-support"></script>
 </body>
 </html>

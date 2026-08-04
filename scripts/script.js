@@ -46,6 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
         sortSelect: document.querySelector("#sort-select"),
         statusMessage: document.querySelector("#status-message"),
         supportButtons: [...document.querySelectorAll("[data-support-tier]")],
+        supportMenu: document.querySelector("#support-menu"),
+        supportPopover: document.querySelector("#support-popover"),
+        supportToggle: document.querySelector("#support-toggle"),
         copyShareUrl: document.querySelector("#copy-share-url"),
         createCustomShare: document.querySelector("#create-custom-share"),
         customSelectionCount: document.querySelector("#custom-selection-count"),
@@ -101,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const localMetadataPromise = loadLocalMetadata();
     let lastDiscogsRequestTime = 0;
     let discogsRequestQueue = Promise.resolve();
+    let supportImpressionTracked = false;
 
     function trackRum(name, context = {}) {
         window.vinylRum?.track(name, context);
@@ -111,6 +115,19 @@ document.addEventListener("DOMContentLoaded", () => {
             ...context,
             status_code: Number.isFinite(error?.status) ? error.status : undefined,
         });
+    }
+
+    function closeSupportPopover({ restoreFocus = false } = {}) {
+        if (elements.supportPopover.hidden) return;
+        elements.supportPopover.hidden = true;
+        elements.supportToggle.setAttribute("aria-expanded", "false");
+        if (restoreFocus) elements.supportToggle.focus();
+    }
+
+    function openSupportPopover() {
+        elements.supportPopover.hidden = false;
+        elements.supportToggle.setAttribute("aria-expanded", "true");
+        trackRum("support_cta_opened", { placement: "header" });
     }
 
     function shuffle(records) {
@@ -1535,6 +1552,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function showConnectionScreen(errorMessage = "") {
+        closeSupportPopover();
         elements.navigationRow.hidden = true;
         elements.collectionPanel.hidden = true;
         elements.connectionScreen.hidden = false;
@@ -1567,6 +1585,10 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.connectionScreen.hidden = true;
         elements.collectionPanel.hidden = false;
         elements.navigationRow.hidden = false;
+        if (!supportImpressionTracked) {
+            supportImpressionTracked = true;
+            trackRum("support_cta_impression", { placement: "header" });
+        }
         elements.connectedUsername.textContent = `@${state.profile.username}`;
         elements.searchInput.value = "";
         elements.sortSelect.value = "shuffle";
@@ -1771,13 +1793,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     elements.disconnectButton.addEventListener("click", disconnect);
     elements.clearSharedView.addEventListener("click", clearSharedView);
+    elements.supportToggle.addEventListener("click", () => {
+        if (elements.supportPopover.hidden) openSupportPopover();
+        else closeSupportPopover();
+    });
     elements.supportButtons.forEach((button) => {
         button.addEventListener("click", () => {
             trackRum("developer_support_clicked", {
                 support_tier: button.dataset.supportTier,
                 amount_usd: button.dataset.supportTier === "coffee" ? 5 : 10,
+                placement: button.dataset.supportPlacement,
             });
+            closeSupportPopover();
         });
+    });
+    document.addEventListener("click", (event) => {
+        if (!elements.supportPopover.hidden && !elements.supportMenu.contains(event.target)) {
+            closeSupportPopover();
+        }
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !elements.supportPopover.hidden) {
+            closeSupportPopover({ restoreFocus: true });
+        }
     });
     elements.closeModal.addEventListener("click", closeModal);
     elements.modal.addEventListener("click", (event) => {
