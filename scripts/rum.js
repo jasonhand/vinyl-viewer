@@ -63,6 +63,7 @@
             defaultPrivacyLevel: "mask",
             beforeSend: scrubEvent,
         });
+        window.DD_RUM.startSessionReplayRecording();
         window.DD_RUM.setGlobalContextProperty("deployment", deployment);
         window.DD_RUM.setGlobalContextProperty("seller_feature_enabled", ["1", "true"].includes(
             (new URLSearchParams(window.location.search).get("seller") || "").toLocaleLowerCase(),
