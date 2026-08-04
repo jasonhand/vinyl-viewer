@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const randomIndex = Math.floor(Math.random() * (index + 1));
             [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
         }
-        state.shuffleOrder = new Map(shuffled.map((record, index) => [record.id, index]));
+        shuffled.forEach((record, index) => state.shuffleOrder.set(record.shareId, index));
     }
 
     function isSafeUrl(value) {
@@ -455,7 +455,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "release-oldest": (first, second) => byReleaseYear(first, second, 1),
             newest: (first, second) => second.dateAdded.localeCompare(first.dateAdded),
             rating: (first, second) => (second.rating || 0) - (first.rating || 0) || collator.compare(first.artist, second.artist),
-            shuffle: (first, second) => state.shuffleOrder.get(first.id) - state.shuffleOrder.get(second.id),
+            shuffle: (first, second) => (state.shuffleOrder.get(first.shareId) ?? 0) - (state.shuffleOrder.get(second.shareId) ?? 0),
         };
 
         return visibleRecords.sort(sorters[sort] || sorters.shuffle);
@@ -1701,7 +1701,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     elements.sortSelect.addEventListener("change", renderRecords);
     elements.shuffleButton.addEventListener("click", () => {
-        shuffle(state.activeView === "seller" ? state.sellerRecords : state.records);
+        const records = state.activeView === "seller"
+            ? state.sellerRecords
+            : state.activeView === "wantlist"
+                ? state.wantlistRecords
+                : state.records;
+        shuffle(records);
         elements.sortSelect.value = "shuffle";
         renderRecords();
     });
