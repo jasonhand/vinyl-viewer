@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function openSupportPopover() {
         elements.supportPopover.hidden = false;
         elements.supportToggle.setAttribute("aria-expanded", "true");
-        trackRum("support_cta_opened", { placement: "header" });
+        trackRum("support_cta_opened", { placement: "floating" });
     }
 
     function shuffle(records) {
@@ -1587,7 +1587,7 @@ document.addEventListener("DOMContentLoaded", () => {
         elements.navigationRow.hidden = false;
         if (!supportImpressionTracked) {
             supportImpressionTracked = true;
-            trackRum("support_cta_impression", { placement: "header" });
+            trackRum("support_cta_impression", { placement: "floating" });
         }
         elements.connectedUsername.textContent = `@${state.profile.username}`;
         elements.searchInput.value = "";

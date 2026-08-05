@@ -8,8 +8,8 @@
     <meta name="description" content="Browse a personal collection of vinyl records by artist, title, label, and genre.">
     <link rel="icon" href="images/favicon.png" type="image/png">
     <title>Vinyl Viewer</title>
-    <script src="scripts/rum.js?v=20260804-support"></script>
-    <link rel="stylesheet" href="style/style.css?v=20260804-support">
+    <script src="scripts/rum.js?v=20260805-replay"></script>
+    <link rel="stylesheet" href="style/style.css?v=20260805-single-header-row">
 </head>
 <body>
     <div class="background" aria-hidden="true"></div>
@@ -24,31 +24,6 @@
                 </div>
             </div>
             <div id="navigation-row" class="navigation-row" hidden>
-                <div class="account-tools">
-                    <div id="support-menu" class="support-menu">
-                        <button id="support-toggle" class="support-toggle" type="button" aria-expanded="false" aria-controls="support-popover">
-                            <span aria-hidden="true">☕</span> Support
-                        </button>
-                        <div id="support-popover" class="support-popover" aria-labelledby="support-popover-title" hidden>
-                            <p class="eyebrow">Support the project</p>
-                            <strong id="support-popover-title">Enjoy Vinyl Viewer?</strong>
-                            <p>Help keep it running.</p>
-                            <div class="support-popover-actions">
-                                <a href="https://buy.stripe.com/28E5kD26Lgnjfpr4XQ3oA00" target="_blank" rel="noopener noreferrer" data-support-tier="coffee" data-support-placement="header" data-dd-action-name="Buy developer $5 coffee">$5 Coffee</a>
-                                <a href="https://buy.stripe.com/14AdR9aDhgnjcdf61U3oA01" target="_blank" rel="noopener noreferrer" data-support-tier="coffee-and-snack" data-support-placement="header" data-dd-action-name="Buy developer $10 coffee and snack">$10 Coffee + Snack</a>
-                            </div>
-                            <small>Secure checkout with Stripe</small>
-                        </div>
-                    </div>
-                    <button class="builder-button" type="button" data-view="about">Who built this?</button>
-                    <div class="profile-tools">
-                        <span class="profile-summary">
-                            <small>Viewing profile</small>
-                            <strong id="connected-username"></strong>
-                        </span>
-                        <button id="disconnect-button" class="disconnect-button" type="button">Disconnect</button>
-                    </div>
-                </div>
                 <nav class="view-nav" aria-label="Vinyl Viewer sections">
                     <button class="view-nav-button is-active" type="button" data-view="collection" aria-current="page">
                         Collection <span id="collection-count">0</span>
@@ -66,6 +41,16 @@
                         Share
                     </button>
                 </nav>
+                <div class="account-tools">
+                    <button class="builder-button" type="button" data-view="about">Who built this?</button>
+                    <div class="profile-tools">
+                        <span class="profile-summary">
+                            <small>Viewing profile</small>
+                            <strong id="connected-username"></strong>
+                        </span>
+                        <button id="disconnect-button" class="disconnect-button" type="button">Disconnect</button>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -275,6 +260,22 @@
         </section>
     </main>
 
+    <div id="support-menu" class="support-menu">
+        <button id="support-toggle" class="support-toggle" type="button" aria-label="Support the project" title="Support the project" aria-expanded="false" aria-controls="support-popover">
+            <span aria-hidden="true">☕</span>
+        </button>
+        <div id="support-popover" class="support-popover" aria-labelledby="support-popover-title" hidden>
+            <p class="eyebrow">Support the project</p>
+            <strong id="support-popover-title">Enjoy Vinyl Viewer?</strong>
+            <p>Help keep it running.</p>
+            <div class="support-popover-actions">
+                <a href="https://buy.stripe.com/28E5kD26Lgnjfpr4XQ3oA00" target="_blank" rel="noopener noreferrer" data-support-tier="coffee" data-support-placement="floating" data-dd-action-name="Buy developer $5 coffee">$5 Coffee</a>
+                <a href="https://buy.stripe.com/14AdR9aDhgnjcdf61U3oA01" target="_blank" rel="noopener noreferrer" data-support-tier="coffee-and-snack" data-support-placement="floating" data-dd-action-name="Buy developer $10 coffee and snack">$10 Coffee + Snack</a>
+            </div>
+            <small>Secure checkout with Stripe</small>
+        </div>
+    </div>
+
     <div id="modal" class="modal" hidden>
         <div class="modal-backdrop" data-close-modal></div>
         <section class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
@@ -302,6 +303,6 @@
         </article>
     </template>
 
-    <script src="scripts/script.js?v=20260804-support"></script>
+    <script src="scripts/script.js?v=20260805-floating-support"></script>
 </body>
 </html>

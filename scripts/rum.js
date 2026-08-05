@@ -73,6 +73,7 @@
 
     const script = document.createElement("script");
     script.async = true;
+    script.crossOrigin = "anonymous";
     script.src = "https://www.datadoghq-browser-agent.com/us1/v7/datadog-rum.js";
     document.head.append(script);
 }(window, document));

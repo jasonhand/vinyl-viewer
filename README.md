@@ -126,11 +126,11 @@ The removed `data/input.csv` file remains in existing Git history. If it contain
 
 The production app uses [Datadog Browser RUM](https://docs.datadoghq.com/real_user_monitoring/application_monitoring/browser/setup/) to collect page performance, browser errors, resources, long tasks, and selected product events.
 
-- `scripts/rum.js` loads the Datadog Browser SDK and identifies Netlify, GitHub Pages, and local traffic with a `deployment` context value.
+- `scripts/rum.js` loads the Datadog Browser SDK with CORS enabled so the v7 Session Replay recorder chunk can resolve, and identifies Netlify, GitHub Pages, and local traffic with a `deployment` context value.
 - Session Replay is enabled for 100% of monitored sessions. Recording starts explicitly and forces an existing sampled session into replay so a prior sampling decision cannot delay validation. Automatic action names are privacy-protected and the default privacy level is `mask`.
 - Query strings, URL fragments, and Discogs usernames in resource paths are removed before events are sent.
 - Custom events contain aggregate counts and feature state only; usernames, searches, share descriptions, album IDs, and share URLs are not included.
-- The connected header emits `support_cta_impression` once per page load and `support_cta_opened` when its support popover opens. Support button clicks emit `developer_support_clicked` with the placement, selected tier, and amount, without payment or customer data. Their explicit `$5 coffee` and `$10 coffee and snack` action names remain visible while other automatic action names stay masked.
+- The floating support control emits `support_cta_impression` once per page load and `support_cta_opened` when its popover opens. Support button clicks emit `developer_support_clicked` with the placement, selected tier, and amount, without payment or customer data. Their explicit `$5 coffee` and `$10 coffee and snack` action names remain visible while other automatic action names stay masked.
 - The browser client token is intentionally public. Never add a Datadog API key or application key to this repository.
 
 Netlify's `_headers` file permits the Datadog Browser SDK, intake endpoints, and the `blob:` Web Worker required to compress Session Replay payloads in the Content Security Policy. GitHub Pages does not apply `_headers`; configure equivalent headers at a proxy or CDN if one is added in front of that deployment.
@@ -141,7 +141,7 @@ To validate locally, serve the repository and open the app in a browser:
 python3 -m http.server 8001
 ```
 
-In browser developer tools, confirm that `datadog-rum.js` loads and requests to `browser-intake-datadoghq.com` are not blocked. New applications can take a few minutes to appear in the [Datadog RUM Explorer](https://app.datadoghq.com/rum/performance-monitoring?query=%40application.id%3A709e7d93-9fec-4547-9721-154d38c929ae).
+In browser developer tools, confirm that `datadog-rum.js` and its `datadogRecorder` chunk load, and that POST requests to both `/api/v2/rum` and `/api/v2/replay` return `202`. New applications can take a few minutes to appear in the [Datadog RUM Explorer](https://app.datadoghq.com/rum/performance-monitoring?query=%40application.id%3A709e7d93-9fec-4547-9721-154d38c929ae).
 
 ### Developer support monitor
 
@@ -163,4 +163,4 @@ Use these custom actions to measure the support funnel in Datadog RUM:
 @action.name:developer_support_clicked
 ```
 
-The primary conversion rate is the number of unique sessions with `developer_support_clicked` divided by unique sessions with `support_cta_impression`. Break clicks down by `@context.placement`, `@context.support_tier`, and `@context.amount_usd` to compare the header and About page and the two contribution levels. Compare clicks per `discogs_collection_loaded` session for 14 days before and after launch as the historical directional baseline; target a 25% relative improvement and exclude `env:development` traffic.
+The primary conversion rate is the number of unique sessions with `developer_support_clicked` divided by unique sessions with `support_cta_impression`. Break clicks down by `@context.placement`, `@context.support_tier`, and `@context.amount_usd` to compare the floating control and About page and the two contribution levels. Compare clicks per `discogs_collection_loaded` session for 14 days before and after launch as the historical directional baseline; target a 25% relative improvement and exclude `env:development` traffic.
